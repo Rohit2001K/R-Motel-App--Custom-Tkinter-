@@ -55,3 +55,16 @@ class User_actions:
         if result:
             return True
         return False
+    
+    #UserSing Up
+    def create_user(self,fname,lname,mno,email,password):
+        try:
+            user_exist=self.check_user_exsist(email)
+            if user_exist:
+                return False
+            else:
+                cursor.execute('INSERT INTO Users (fname, lname, mobile, email, password) VALUES (%s, %s, %s, %s, %s)', (fname, lname, mno, email, password))
+                result=my_sql.commit()
+                return True
+        except:
+            return False 

@@ -83,7 +83,7 @@ class app:
         signup_img.image=signup_img
         sing_up=canvas.create_text(530.0,533.0,anchor="nw",text="Don’t Have Account?",fill="#004B6A",font=("Bungee Regular", 16 * -1))
         sing_up_img=PhotoImage(file=self.relative_to_assets("signup.png"))
-        sing_up_button=Button(image=sing_up_img,borderwidth=0,highlightthickness=0,command=lambda: print("signup clicked"),relief="flat")
+        sing_up_button=Button(image=sing_up_img,borderwidth=0,highlightthickness=0,command=self.sign_up_page,relief="flat")
         sing_up_button.place(x=740.0,y=543.0,width=94.0,height=24.0)
         sing_up_img.image=sing_up_img
 
@@ -106,6 +106,7 @@ class app:
                 self.user_email =email  
                 self.clear_screen()  
                 print("WORKING")
+                
 
     #forgot password page       
     def user_forgot_password(self):
@@ -166,9 +167,110 @@ class app:
             elif result=="user_exsist_false":
                 self.background.itemconfig(self.forgot_pass_msg, text="No user found with this email", fill="red")
 
+    #sign up page
+    def sign_up_page(self):
+        self.clear_screen() 
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
 
+        #left side page
+        canvas.place(x = 0, y = 0) #basic setup
+        forgot_pass_img_open=PhotoImage(file=self.relative_to_assets("forget_pass.png"))
+        forgot_pass_img = canvas.create_image(168.0,305.0,image=forgot_pass_img_open)
+        forgot_pass_img_open.image=forgot_pass_img_open
 
+        #back button
+        back_button_img= PhotoImage(file=self.relative_to_assets("back_button.png"))
+        back_button= Button(image=back_button_img,borderwidth=0,highlightthickness=0,command=self.login_form,relief="flat")
+        back_button.place(x=369.0,y=18.0,width=45.0,height=48.0)
+        back_button_img.image=back_button_img
 
+        #heading
+        heading_logo_img= PhotoImage(file=self.relative_to_assets("sign_up_heading.png"))
+        heading_logo = canvas.create_image(621.0,85.0,image=heading_logo_img)
+        heading_logo_img.image=heading_logo_img
+
+        #fields
+        #first name text and entry
+        first_name=canvas.create_text(365.0,174.0,anchor="nw",text="First Name :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        fname_img_open = PhotoImage(file=self.relative_to_assets("sign_up_entry.png"))
+        fname_img = canvas.create_image(692.0,199.0,image=fname_img_open)
+        self.fname= Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,font=(11))
+        self.fname.place(x=547.0,y=184.0,width=290.0,height=30.0)
+        fname_img_open.image=fname_img_open
+
+        #last name
+        last_name=canvas.create_text(365.0,221.0,anchor="nw",text="Last Name :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        fname_img_open = PhotoImage(file=self.relative_to_assets("sign_up_entry.png"))
+        fname_img = canvas.create_image(692.0,247.0,image=fname_img_open)
+        self.lname= Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,font=(11))
+        self.lname.place(x=547.0,y=231.0,width=290.0,height=30.0)
+        fname_img_open.image=fname_img_open
+
+        #mobile number
+        first_name=canvas.create_text(365.0,272.0,anchor="nw",text="Mobile No. :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        fname_img_open = PhotoImage(file=self.relative_to_assets("sign_up_entry.png"))
+        fname_img = canvas.create_image(692.0,298.0,image=fname_img_open)
+        self.mobile= Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,font=(11))
+        self.mobile.place(x=547.0,y=282.0,width=290.0,height=30.0)
+        fname_img_open.image=fname_img_open
+
+        #email
+        first_name=canvas.create_text(365.0,323.0,anchor="nw",text="Email :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        fname_img_open = PhotoImage(file=self.relative_to_assets("sign_up_entry.png"))
+        fname_img = canvas.create_image(692.0,349.0,image=fname_img_open)
+        self.email= Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,font=(11))
+        self.email.place(x=547.0,y=333.0,width=290.0,height=30.0)
+        fname_img_open.image=fname_img_open
+
+        #password
+        first_name=canvas.create_text(365.0,374.0,anchor="nw",text="Password :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        fname_img_open = PhotoImage(file=self.relative_to_assets("sign_up_entry.png"))
+        fname_img = canvas.create_image(692.0,400.0,image=fname_img_open)
+        self.password1= Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,show="*",font=(11))
+        self.password1.place(x=547.0,y=384.0,width=290.0,height=30.0)
+        fname_img_open.image=fname_img_open
+
+        #confirm password 
+        first_name=canvas.create_text(365.0,425.0,anchor="nw",text="Re Password :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        fname_img_open = PhotoImage(file=self.relative_to_assets("sign_up_entry.png"))
+        fname_img = canvas.create_image(692.0,451.0,image=fname_img_open)
+        self.password2= Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,show="*",font=(11))
+        self.password2.place(x=547.0, y=435.0,width=290.0,height=30.0)
+        fname_img_open.image=fname_img_open
+
+        #message field
+        self.singup_msg=canvas.create_text(365.0,478.0,anchor="nw",text="Please Enter  Your Information",fill="#004B6A",font=("Bungee Regular", 12 * -1))
+
+        #submit button
+        submit_button_img = PhotoImage(file=self.relative_to_assets("signup_submit.png"))
+        submit_button = Button(image=submit_button_img,borderwidth=0,highlightthickness=0,command=self.submit_user_signup,relief="flat")
+        submit_button.place(x=365.0,y=517.0,width=481.0,height=40.0)
+        submit_button_img.image=submit_button_img
+
+    #singup logical function
+    def submit_user_signup(self):
+        fname=self.fname.get()
+        lname=self.lname.get()
+        mobile=self.mobile.get()
+        email=self.email.get()
+        pass1=self.password1.get()
+        pass2=self.password2.get()
+        if not fname or not lname or not mobile or not email or not pass1 or not pass2:
+            self.background.itemconfig(self.singup_msg, text="Please fill all fields!", fill="red")
+        else:
+            if pass1==pass2:
+                password=self.password1.get()
+                user=User_actions()
+                result=user.create_user(fname,lname,mobile,email,password)
+                if result:
+                    self.background.itemconfig(self.singup_msg, text="Account created successfully.", fill="Blue")
+                else:
+                    self.background.itemconfig(self.singup_msg, text="An account with this email address already exists.", fill="red")
+
+            else:
+                self.background.itemconfig(self.singup_msg, text="Passwords must match!", fill="red")
+                
+           
 
     #clear everything function
     def clear_screen(self):
