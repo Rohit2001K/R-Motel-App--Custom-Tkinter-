@@ -89,8 +89,10 @@ class app:
 
     #main login function
     def LoginUser(self):
-        email=self.email.get()
-        password=self.password.get()
+        #email=self.email.get()
+        #password=self.password.get()
+        email="noemail@why.com"
+        password=1234
         if not email or not password:
             self.background.itemconfig(self.login_msg, text="Please Enter Your Email and Password First!", fill="red")
         else:
@@ -104,8 +106,7 @@ class app:
             else: 
                 self.user_name = result[0][1]  
                 self.user_email =email  
-                self.clear_screen()  
-                print("WORKING")
+                self.home()
                 
 
     #forgot password page       
@@ -270,7 +271,65 @@ class app:
             else:
                 self.background.itemconfig(self.singup_msg, text="Passwords must match!", fill="red")
                 
-           
+    #home page
+    def home(self):
+        self.clear_screen() 
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
+        canvas.place(x = 0, y = 0) #basic setup
+
+        #left panel
+        left_home_img= PhotoImage(file=self.relative_to_assets("home_left_img.png"))
+        left_home=canvas.create_image(92.0,305.0,image=left_home_img)
+        left_home_img.image=left_home_img
+
+        #heading
+        home_img = PhotoImage(file=self.relative_to_assets("home_page_head.png"))
+        home_heading= canvas.create_image(512.0,88.0,image=home_img)
+        home_img.image=home_img
+
+        #text
+        help_text=canvas.create_text(264.0,164.0,anchor="nw",text="Your comfort is our priority.\nPlease choose an option to get started,",fill="#004B6A",font=("Bungee Regular", 18 * -1))
+
+        #buttons
+        #account button
+        account_button_img= PhotoImage(file=self.relative_to_assets("account_button.png"))
+        account_button = Button(image=account_button_img,borderwidth=0,highlightthickness=0,command=lambda: print("account clicked"),relief="flat")
+        account_button.place(x=264.0,y=274.0,width=248.23699951171875,height=40.0)
+        account_button_img.image=account_button_img
+
+        #account info button
+        account_info_img = PhotoImage(file=self.relative_to_assets("account_info_button.png"))
+        account_info_button = Button(image=account_info_img,borderwidth=0,highlightthickness=0,command=lambda: print("account info clicked"),relief="flat")
+        account_info_button.place(x=594.0,y=274.0,width=248.23699951171875,height=40.0)
+        account_info_img.image= account_info_img
+
+        #booking button
+        booking_button_img = PhotoImage(file=self.relative_to_assets("booking_button.png"))
+        booking_button = Button(image=booking_button_img,borderwidth=0,highlightthickness=0,command=lambda: print("booking clicked"),relief="flat")
+        booking_button.place(x=264.0,y=362.0,width=248.23699951171875,height=40.0)
+        booking_button_img.image=booking_button_img
+
+        #Booking history button
+        all_booking_img = PhotoImage(file=self.relative_to_assets("all_booking_button.png"))
+        all_booking_button= Button(image=all_booking_img,borderwidth=0,highlightthickness=0,command=lambda: print("All booking clicked"),relief="flat")
+        all_booking_button.place(x=594.0,y=362.0,width=248.23699951171875,height=40.0)
+        all_booking_img.image=all_booking_img 
+
+        #food button
+        order_food_img = PhotoImage(file=self.relative_to_assets("order_food_button.png"))
+        order_food_button = Button(image=order_food_img,borderwidth=0,highlightthickness=0,command=lambda: print("order food clicked"),relief="flat")
+        order_food_button.place(x=264.0,y=451.0,width=248.23699951171875,height=40.0)
+        order_food_img.image=order_food_img
+
+        #order status button
+        order_status_img= PhotoImage(file=self.relative_to_assets("order_status_button.png"))
+        order_status_button = Button(image=order_status_img,borderwidth=0,highlightthickness=0,command=lambda: print("order status clicked"),relief="flat")
+        order_status_button.place(x=594.0,y=451.0,width=248.23699951171875,height=40.0)
+        order_status_img.image=order_status_img
+
+
+
+
 
     #clear everything function
     def clear_screen(self):
