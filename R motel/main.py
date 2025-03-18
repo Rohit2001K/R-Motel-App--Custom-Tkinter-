@@ -299,7 +299,7 @@ class app:
 
         #account info button
         account_info_img = PhotoImage(file=self.relative_to_assets("account_info_button.png"))
-        account_info_button = Button(image=account_info_img,borderwidth=0,highlightthickness=0,command=lambda: print("account info clicked"),relief="flat")
+        account_info_button = Button(image=account_info_img,borderwidth=0,highlightthickness=0,command=self.account_info,relief="flat")
         account_info_button.place(x=594.0,y=274.0,width=248.23699951171875,height=40.0)
         account_info_img.image= account_info_img
 
@@ -327,7 +327,55 @@ class app:
         order_status_button.place(x=594.0,y=451.0,width=248.23699951171875,height=40.0)
         order_status_img.image=order_status_img
 
+    #account info page
+    def account_info(self):
+        self.clear_screen() 
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
+        canvas.place(x = 0, y = 0) #basic setup
 
+        #left pannels 
+        left_home_img= PhotoImage(file=self.relative_to_assets("account_l_panel.png"))
+        left_home=canvas.create_image(92.0,305.0,image=left_home_img)
+        left_home_img.image=left_home_img
+
+        #back button
+        back_button_img= PhotoImage(file=self.relative_to_assets("back_button.png"))
+        back_button= Button(image=back_button_img,borderwidth=0,highlightthickness=0,command=self.home,relief="flat")
+        back_button.place(x=209.0,y=18.0,width=45.0,height=48.0)
+        back_button_img.image=back_button_img
+
+        #heading
+        home_img = PhotoImage(file=self.relative_to_assets("my account_head.png"))
+        home_heading= canvas.create_image(512.0,118.0,image=home_img)
+        home_img.image=home_img
+
+        #logical function
+        user=User_actions()
+        result=user.user_account(self.user_email)
+        total_spend=user.user_spends(self.user_email)
+
+        #fname
+        fname=canvas.create_text(231.0,238.0,anchor="nw",text="First Name :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        user_fname=canvas.create_text(477.0,238.0,anchor="nw",text=f"{result[0][1]}",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+
+        #lname
+        lname=canvas.create_text(231.0,283.0,anchor="nw",text="Last Name :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        user_lname=canvas.create_text(477.0,283.0,anchor="nw",text=f"{result[0][2]}",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        
+        #mobile
+        mobile=canvas.create_text(231.0,329.0,anchor="nw",text="Mobile No :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        user_mobile=canvas.create_text(477.0,329.0,anchor="nw",text=f"{result[0][3]}",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+
+        #email
+        email=canvas.create_text(231.0,374.0,anchor="nw",text="EMail :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        user_email=canvas.create_text(477.0,374.0,anchor="nw",text=f"{result[0][5]}",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+
+        #total
+        total=canvas.create_text(231.0,420.0,anchor="nw",text="Total Spends :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        total_spend=canvas.create_text(477.0,419.0,anchor="nw",text=f"Rs.{total_spend}",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+
+        #bottom msg
+        msg=canvas.create_text(231.0,476.0,anchor="nw",text="TO change account info and password vist My account",fill="#004B6A",font=("Bungee Regular", 15 * -1))
 
 
 

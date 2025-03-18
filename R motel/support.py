@@ -68,3 +68,21 @@ class User_actions:
                 return True
         except:
             return False 
+        
+#USER ACCOUNT
+    def user_account(self,email):
+        cursor.execute('select * from users where email=%s',(email,))
+        result=cursor.fetchall()
+        return result
+
+#fetching user total spends on room booking        
+    def user_spends(self,email):
+        #room booking total 
+        cursor.execute('select price from bookings where email=%s',(email,))   
+        room_booking_price=cursor.fetchall()
+        total_room_price=0
+        for i in room_booking_price:
+            for j in i:
+                total_room_price+=int(j)
+        #food total
+        return total_room_price   
