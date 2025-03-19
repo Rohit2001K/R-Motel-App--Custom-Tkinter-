@@ -1,8 +1,7 @@
 from pathlib import Path
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
-
 from support import User_actions
-
+from tkinter import *
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / "assets"
 
@@ -293,7 +292,7 @@ class app:
         #buttons
         #account button
         account_button_img= PhotoImage(file=self.relative_to_assets("account_button.png"))
-        account_button = Button(image=account_button_img,borderwidth=0,highlightthickness=0,command=lambda: print("account clicked"),relief="flat")
+        account_button = Button(image=account_button_img,borderwidth=0,highlightthickness=0,command=self.my_account,relief="flat")
         account_button.place(x=264.0,y=274.0,width=248.23699951171875,height=40.0)
         account_button_img.image=account_button_img
 
@@ -345,7 +344,7 @@ class app:
         back_button_img.image=back_button_img
 
         #heading
-        home_img = PhotoImage(file=self.relative_to_assets("my account_head.png"))
+        home_img = PhotoImage(file=self.relative_to_assets("account_info_head.png"))
         home_heading= canvas.create_image(512.0,118.0,image=home_img)
         home_img.image=home_img
 
@@ -376,6 +375,124 @@ class app:
 
         #bottom msg
         msg=canvas.create_text(231.0,476.0,anchor="nw",text="TO change account info and password vist My account",fill="#004B6A",font=("Bungee Regular", 15 * -1))
+
+    def my_account(self):
+        self.clear_screen() 
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
+        canvas.place(x = 0, y = 0) #basic setup
+
+        #logical function
+        user = User_actions()
+        result=user.account_info_fetch(self.user_email)
+        fname=result[0][0]
+        lname=result[0][1]
+        mob_no=result[0][2]
+        email=result[0][3]
+
+        #left pannels 
+        left_home_img= PhotoImage(file=self.relative_to_assets("account_l_panel.png"))
+        left_home=canvas.create_image(92.0,305.0,image=left_home_img)
+        left_home_img.image=left_home_img
+
+        #back button
+        back_button_img= PhotoImage(file=self.relative_to_assets("back_button.png"))
+        back_button= Button(image=back_button_img,borderwidth=0,highlightthickness=0,command=self.home,relief="flat")
+        back_button.place(x=209.0,y=18.0,width=45.0,height=48.0)
+        back_button_img.image=back_button_img
+
+        #heading
+        home_img = PhotoImage(file=self.relative_to_assets("my account_head.png"))
+        home_heading= canvas.create_image(512.0,118.0,image=home_img)
+        home_img.image=home_img
+
+        #fname
+        fname_label = canvas.create_text(239.0, 190.0, anchor="nw", text="First Name :", fill="#004B6A", font=("Bungee Regular", 20 * -1))
+        fname_img = PhotoImage(file=self.relative_to_assets("my_acc_entry_img.png"))
+        fname_back = canvas.create_image(558.5, 214.0, image=fname_img)
+        self.fname = Entry(bd=0, bg="#D9D9D9", fg="#000716", highlightthickness=0,font=(11))
+        self.fname.place(x=410.0, y=200.0, width=297.0, height=26.0)
+        fname_img.image = fname_img
+        self.fname.insert(0, fname) 
+
+        #lname
+        lname_label = canvas.create_text(239.0, 235.0, anchor="nw", text="Last Name :", fill="#004B6A", font=("Bungee Regular", 20 * -1))
+        lname_img = PhotoImage(file=self.relative_to_assets("my_acc_entry_img.png"))
+        lname_back = canvas.create_image(558.5, 261.0, image=lname_img)
+        self.lname = Entry(bd=0, bg="#D9D9D9", fg="#000716", highlightthickness=0,font=(11))
+        self.lname.place(x=410.0, y=247.0, width=297.0, height=26.0)
+        lname_img.image = lname_img
+        self.lname.insert(0, lname) 
+
+        #mobile no
+        mobile=canvas.create_text(239.0,285.0,anchor="nw",text="Mobile No :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        mobile_img=entry_1= PhotoImage(file=self.relative_to_assets("my_acc_entry_img.png"))
+        mobile_back= canvas.create_image(558.5,309.0,image=lname_img)
+        self.mobile= Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,font=(11))
+        self.mobile.place(x=410.0,y=295.0,width=297.0,height=26.0)
+        mobile_img.image=mobile_img
+        self.mobile.insert(0,mob_no)
+
+        #password help msg
+        help_msg=canvas.create_text(337.0,331.0,anchor="nw",text="Leave Password Blank to keep old password",fill="#004B6A",font=("Bungee Regular", 15 * -1))
+
+        #password1
+        password1=canvas.create_text(239.0,368.0,anchor="nw",text="Password:",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        password1_img=entry_1= PhotoImage(file=self.relative_to_assets("my_acc_entry_img.png"))
+        password1_back= canvas.create_image(558.5,392.0,image=password1_img)
+        self.password1= Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,font=(11),show="*")
+        self.password1.place(x=410.0,y=378.0,width=297.0,height=26.0)
+        password1_img.image=password1_img
+
+        #password2
+        password2=canvas.create_text(239.0,410.0,anchor="nw",text="RE PASSWORD:",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        password2_img=entry_1= PhotoImage(file=self.relative_to_assets("my_acc_entry_img.png"))
+        password2_back= canvas.create_image(558.5,434.0,image=password2_img)
+        self.password2= Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,font=(11),show="*")
+        self.password2.place(x=410.0,y=420.0,width=297.0,height=26.0)
+        password2_img.image=password2_img
+
+        #msg
+        self.my_acc_msg=canvas.create_text(239.0,461.0,anchor="nw",text="TO change account info and password please fill above",fill="#004B6A",font=("Bungee Regular", 15 * -1))
+
+        #submit button
+        sub_img = PhotoImage(file=self.relative_to_assets("my_acc_sub.png"))
+        submit_button = Button(image=sub_img,borderwidth=0,highlightthickness=0,command=self.account_updation,relief="flat")
+        submit_button.place(x=239.0,y=503.0,width=586.0,height=40.0)
+        sub_img.image=sub_img
+
+    #updating info without entring password
+    def account_updation_without_pass(self):
+        user = User_actions()
+        email=self.user_email
+        fname=self.fname.get()
+        lname=self.lname.get()
+        mobile=self.mobile.get()
+        result=user.user_account_update(email,fname,lname,mobile)
+        if not result:
+                self.background.itemconfig(self.my_acc_msg, text="ERROR IN UPDATING USER INFO", fill="red")
+        else:
+            self.background.itemconfig(self.my_acc_msg, text="User information updated", fill="green")
+
+    #updating user info with password and other info
+    def account_updation(self):
+        user = User_actions()
+        email=self.user_email
+        passwd1=self.password1.get()
+        passwd2=self.password2.get()
+        if not passwd1 or not passwd2:
+            self.account_updation_without_pass()    
+        else:
+            if passwd1==passwd2:
+                result=user.user_account_password_update(email,passwd1)
+                self.account_updation_without_pass() 
+                if result:
+                    self.background.itemconfig(self.my_acc_msg, text="User information updated", fill="green")
+                    self.password1.delete(0,END)
+                    self.password2.delete(0,END)
+                else:
+                    self.background.itemconfig(self.my_acc_msg, text="ERROR IN UPDATING USER PASSWORD", fill="red")
+            else:
+                self.background.itemconfig(self.my_acc_msg, text="Password and re password must match", fill="red")
 
 
 

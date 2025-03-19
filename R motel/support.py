@@ -75,7 +75,7 @@ class User_actions:
         result=cursor.fetchall()
         return result
 
-#fetching user total spends on room booking        
+    #fetching user total spends on room booking        
     def user_spends(self,email):
         #room booking total 
         cursor.execute('select price from bookings where email=%s',(email,))   
@@ -86,3 +86,28 @@ class User_actions:
                 total_room_price+=int(j)
         #food total
         return total_room_price   
+    
+    #user account info fetching
+    def account_info_fetch(self,email):
+        cursor.execute('select fname,lname,mobile,email from users where email=%s',(email,))
+        result=cursor.fetchall()
+        return result
+    
+    #updating user account info without password
+    def user_account_update(self,email,fname,lname,mobile):
+        try:
+            cursor.execute('UPDATE users SET fname=%s, lname=%s, mobile=%s WHERE email=%s', (fname, lname, mobile, email))
+            my_sql.commit()
+            return True
+        except:
+            return False
+        
+    #updating user account password
+    def user_account_password_update(self,email,passwd):
+        try:
+            cursor.execute('UPDATE users SET password=%s where email=%s', (passwd, email,))
+            my_sql.commit()
+            return True
+        except:
+            return False
+    
