@@ -1,7 +1,10 @@
 from pathlib import Path
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage,ttk
 from support import User_actions
 from tkinter import *
+import re
+import datetime
+
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / "assets"
 
@@ -249,6 +252,8 @@ class app:
 
     #singup logical function
     def submit_user_signup(self):
+        email_pattern=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        mobile_pattern=r'^\d{10}$'
         fname=self.fname.get()
         lname=self.lname.get()
         mobile=self.mobile.get()
@@ -257,18 +262,23 @@ class app:
         pass2=self.password2.get()
         if not fname or not lname or not mobile or not email or not pass1 or not pass2:
             self.background.itemconfig(self.singup_msg, text="Please fill all fields!", fill="red")
-        else:
-            if pass1==pass2:
-                password=self.password1.get()
-                user=User_actions()
-                result=user.create_user(fname,lname,mobile,email,password)
-                if result:
-                    self.background.itemconfig(self.singup_msg, text="Account created successfully.", fill="Blue")
+        elif re.match(email_pattern, email):
+            if re.match(mobile_pattern,mobile):
+                if pass1==pass2:
+                    password=self.password1.get()
+                    user=User_actions()
+                    result=user.create_user(fname,lname,mobile,email,password)
+                    if result:
+                        self.background.itemconfig(self.singup_msg, text="Account created successfully.", fill="Blue")
+                    else:
+                        self.background.itemconfig(self.singup_msg, text="An account with this email address already exists.", fill="red")
                 else:
-                    self.background.itemconfig(self.singup_msg, text="An account with this email address already exists.", fill="red")
-
+                    self.background.itemconfig(self.singup_msg, text="Passwords must match!", fill="red")
             else:
-                self.background.itemconfig(self.singup_msg, text="Passwords must match!", fill="red")
+                self.background.itemconfig(self.singup_msg, text="Enter valid mobile number!", fill="red")
+        else:
+            self.background.itemconfig(self.singup_msg, text="Enter valid email.", fill="red")
+            
                 
     #home page
     def home(self):
@@ -304,13 +314,13 @@ class app:
 
         #booking button
         booking_button_img = PhotoImage(file=self.relative_to_assets("booking_button.png"))
-        booking_button = Button(image=booking_button_img,borderwidth=0,highlightthickness=0,command=lambda: print("booking clicked"),relief="flat")
+        booking_button = Button(image=booking_button_img,borderwidth=0,highlightthickness=0,command=self.room_booking,relief="flat")
         booking_button.place(x=264.0,y=362.0,width=248.23699951171875,height=40.0)
         booking_button_img.image=booking_button_img
 
         #Booking history button
         all_booking_img = PhotoImage(file=self.relative_to_assets("all_booking_button.png"))
-        all_booking_button= Button(image=all_booking_img,borderwidth=0,highlightthickness=0,command=lambda: print("All booking clicked"),relief="flat")
+        all_booking_button= Button(image=all_booking_img,borderwidth=0,highlightthickness=0,command=self.booking_history,relief="flat")
         all_booking_button.place(x=594.0,y=362.0,width=248.23699951171875,height=40.0)
         all_booking_img.image=all_booking_img 
 
@@ -468,10 +478,15 @@ class app:
         lname=self.lname.get()
         mobile=self.mobile.get()
         result=user.user_account_update(email,fname,lname,mobile)
-        if not result:
-                self.background.itemconfig(self.my_acc_msg, text="ERROR IN UPDATING USER INFO", fill="red")
+        mobile_pattern=r'^\d{10}$'
+        if re.match(mobile_pattern,mobile):
+            if not result:
+                    self.background.itemconfig(self.my_acc_msg, text="ERROR IN UPDATING USER INFO", fill="red")
+            else:
+                self.background.itemconfig(self.my_acc_msg, text="User information updated", fill="green")
         else:
-            self.background.itemconfig(self.my_acc_msg, text="User information updated", fill="green")
+            self.background.itemconfig(self.my_acc_msg, text="Enter valid mobile number!", fill="red")
+
 
     #updating user info with password and other info
     def account_updation(self):
@@ -493,6 +508,137 @@ class app:
                     self.background.itemconfig(self.my_acc_msg, text="ERROR IN UPDATING USER PASSWORD", fill="red")
             else:
                 self.background.itemconfig(self.my_acc_msg, text="Password and re password must match", fill="red")
+
+    #room booking form
+    def room_booking(self):
+        self.clear_screen() 
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
+        canvas.place(x = 0, y = 0) #basic setup
+
+        #left pannels 
+        left_home_img= PhotoImage(file=self.relative_to_assets("booking_l_panel.png"))
+        left_home=canvas.create_image(92.0,305.0,image=left_home_img)
+        left_home_img.image=left_home_img
+
+        #back button
+        back_button_img= PhotoImage(file=self.relative_to_assets("back_button.png"))
+        back_button= Button(image=back_button_img,borderwidth=0,highlightthickness=0,command=self.home,relief="flat")
+        back_button.place(x=209.0,y=18.0,width=45.0,height=48.0)
+        back_button_img.image=back_button_img
+
+        #heading
+        home_img = PhotoImage(file=self.relative_to_assets("room_booking_head.png"))
+        home_heading= canvas.create_image(512.0,118.0,image=home_img)
+        home_img.image=home_img
+
+        #tree back
+        room_back_img= PhotoImage(file=self.relative_to_assets("room_tree_back.png"))
+        room_background= canvas.create_image(539.0,281.0,image=room_back_img)
+        room_back_img.image=room_back_img
+
+        #msg
+        self.room_booking_msg=canvas.create_text(283.0,394.0,anchor="nw",text="Enter Date (DD-MM-YYYY)",fill="#004B6A",font=("Bungee Regular", 15 * -1))
+
+        #check in date
+        check_in=canvas.create_text(283.0,425.0,anchor="nw",text="Check IN Date :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        check_in_img=PhotoImage(file=self.relative_to_assets("check_date_img.png"))
+        check_in_background = canvas.create_image(643.0,451.0,image=check_in_img)
+        check_in_img.image=check_in_img
+        self.check_in_date=entry_1 = Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0)
+        self.check_in_date.place(x=499.0,y=437.0,width=288.0,height=26.0)
+
+        #check out date
+        check_out=canvas.create_text(283.0,469.0,anchor="nw",text="Check out Date :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        check_out_background = canvas.create_image(643.0,495.0,image=check_in_img)
+        self.check_out_date=entry_1 = Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0)
+        self.check_out_date.place(x=499.0,y=481.0,width=288.0,height=26.0)
+
+        #tree views
+        user = User_actions()
+        result = user.room_booking()
+        columns = ("Room Number", "Beds", "Price")
+        style = ttk.Style()
+        style.theme_use("default")
+        style.configure("Treeview",background="white",fieldbackground="white",foreground="black",bordercolor="white",font=("Arial", 12),rowheight=25)
+        style.configure("Treeview.Heading",
+                        background="white",
+                        foreground="black",
+                        font=("Arial", 11))
+        style.map("Treeview",
+                background=[("selected", "#ADD8E6")],
+                foreground=[("selected", "black")])
+        self.tree = ttk.Treeview(canvas, columns=columns, show="headings", style="Treeview")
+        self.tree.heading("Room Number", text="Room Number")
+        self.tree.heading("Beds", text="Beds")
+        self.tree.heading("Price", text="Price")
+
+        self.tree.column("Room Number", width=100, anchor="center")
+        self.tree.column("Beds", width=100, anchor="center")
+        self.tree.column("Price", width=100, anchor="center")
+        self.tree.place(x=340.0, y=200.0, width=400.0, height=150.0)
+        for row in result:
+            self.tree.insert("", "end", values=row)
+
+        #sbumit button
+        sub_img = PhotoImage(file=self.relative_to_assets("my_acc_sub.png"))
+        submit_button = Button(image=sub_img,borderwidth=0,highlightthickness=0,command=self.book_room,relief="flat")
+        submit_button.place(x=250.0,y=528.0,width=586.0,height=40.0)
+        sub_img.image=sub_img
+
+
+    #get room booking data and feed into DBMS 
+    def book_room(self):
+        selected_room = self.tree.selection()
+        user = User_actions()
+
+        #error if room not selected
+        if not selected_room:
+            self.background.itemconfig(self.room_booking_msg, text="Please select a room.", fill="red")
+            return
+        check_in_date = self.check_in_date.get()
+        check_out_date = self.check_out_date.get()
+
+        #dates validation
+        try:
+            in_day, in_month, in_year = check_in_date.split('-')
+            check_in_day = int(in_day)
+            check_in_month = int(in_month)
+            check_in_year = int(in_year)
+            check_in = datetime.date(check_in_year, check_in_month, check_in_day)
+            today = datetime.date.today()
+            if check_in < today:
+                self.background.itemconfig(self.room_booking_msg, text="Check-in date cannot be earlier than today.", fill="red")
+                return
+        except ValueError:
+            self.background.itemconfig(self.room_booking_msg, text="Invalid Check-in Date (DD-MM-YYYY)", fill="red")
+            return
+        try:
+            out_day, out_month, out_year = check_out_date.split('-')
+            check_out_day = int(out_day)
+            check_out_month = int(out_month)
+            check_out_year = int(out_year)
+            check_out = datetime.date(check_out_year, check_out_month, check_out_day)
+            if check_out <= check_in:
+                self.background.itemconfig(self.room_booking_msg, text="Check-out must be after check-in date.", fill="red")
+                return
+        except ValueError:
+            self.background.itemconfig(self.room_booking_msg, text="Invalid Check-out Date (DD-MM-YYYY)", fill="red")
+            return
+        
+        #feeding room booking data
+        room = self.tree.item(selected_room, "values")
+        try:
+            day_count = (check_out - check_in).days
+            room_no = room[0]
+            price = user.price_fetch(room_no)
+            price_total = day_count * price
+            email = self.user_email
+            self.auth_login.room_booking_conform(email, room_no, check_in, check_out, day_count, price_total)
+            self.room_booking() 
+            self.background.itemconfig(self.room_booking_msg,text=f"Booking confirmed! Total: Rs.{price_total}",fill="green")
+        except Exception as e:
+            print(f"Error: {e}")
+            self.background.itemconfig(self.room_booking_msg,text="Error processing booking. Check dates and try again.",fill="red")
 
 
 

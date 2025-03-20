@@ -2,7 +2,7 @@ import mysql.connector as ms
 from datetime import date
 
 #Mysql Connection
-my_sql=ms.connect(host='localhost',user='',passwd='',database='test')
+my_sql=ms.connect(host='localhost',user='root',passwd='1030',database='test')
 if my_sql.is_connected():
     cursor=my_sql.cursor()
 
@@ -111,3 +111,32 @@ class User_actions:
         except:
             return False
     
+#ROOM BOOKING
+    #showing all available room to user
+    def room_booking(self):
+        cursor.execute('select room_no,beds,price from Rooms where available=True')
+        result=cursor.fetchall()
+        return result    
+
+    #fetching room prices
+    def price_fetch(self,room_no):
+        cursor.execute('select price from rooms where room_no=%s',(room_no,))
+        result=cursor.fetchall()
+        result=result[0][0]
+        return result
+    
+    #making booked room unavailable and insert booking data into DBMS
+    def room_booking_conform(self,email, room_no, check_in_date, check_out_date, days,price):
+        try:
+            cursor.execute('UPDATE rooms SET available=False WHERE room_no=%s', (room_no,))
+            my_sql.commit()
+            cursor.execute('INSERT INTO bookings (email, room_no, check_in, check_out, days,price) VALUES (%s, %s, %s, %s, %s,%s)',(email, room_no, check_in_date, check_out_date, days,price))
+            my_sql.commit()
+        except :
+            print("Error in inserting:")
+
+    #User booking history    
+    def user_booking_history(self,email):
+        cursor.execute('select room_no,check_in,check_out,days,price from bookings where email=%s',(email,))
+        result=cursor.fetchall()
+        return result
