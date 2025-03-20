@@ -640,7 +640,57 @@ class app:
             print(f"Error: {e}")
             self.background.itemconfig(self.room_booking_msg,text="Error processing booking. Check dates and try again.",fill="red")
 
+    def booking_history(self):
+        self.clear_screen() 
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
+        canvas.place(x = 0, y = 0) #basic setup
 
+        #left pannels 
+        left_home_img= PhotoImage(file=self.relative_to_assets("booking_l_panel.png"))
+        left_home=canvas.create_image(92.0,305.0,image=left_home_img)
+        left_home_img.image=left_home_img
+
+        #back button
+        back_button_img= PhotoImage(file=self.relative_to_assets("back_button.png"))
+        back_button= Button(image=back_button_img,borderwidth=0,highlightthickness=0,command=self.home,relief="flat")
+        back_button.place(x=209.0,y=18.0,width=45.0,height=48.0)
+        back_button_img.image=back_button_img
+
+        #heading
+        home_img = PhotoImage(file=self.relative_to_assets("booking_history_head.png"))
+        home_heading= canvas.create_image(545.0,133.0,image=home_img)
+        home_img.image=home_img
+
+        #tree back
+        room_back_img= PhotoImage(file=self.relative_to_assets("booking_history_back.png"))
+        room_background= canvas.create_image(550.0,341.0,image=room_back_img)
+        room_back_img.image=room_back_img
+
+        #tree views
+        user = User_actions()
+        result=user.user_booking_history(self.user_email)
+        columns = ("Room Number", "Check in date", "Check out date")
+        style = ttk.Style()
+        style.theme_use("default")
+        style.configure("Treeview",background="white",fieldbackground="white",foreground="black",bordercolor="white",font=("Arial", 12),rowheight=25)
+        style.configure("Treeview.Heading",
+                        background="white",
+                        foreground="black",
+                        font=("Arial", 11))
+        style.map("Treeview",
+                background=[("selected", "#ADD8E6")],
+                foreground=[("selected", "black")])
+        self.tree = ttk.Treeview(canvas, columns=columns, show="headings", style="Treeview")
+        self.tree.heading("Room Number", text="Room Number")
+        self.tree.heading("Check in date", text="Check in date")
+        self.tree.heading("Check out date", text="Check out date")
+
+        self.tree.column("Room Number", width=100, anchor="center")
+        self.tree.column("Check in date", width=100, anchor="center")
+        self.tree.column("Check out date", width=100, anchor="center")
+        self.tree.place(x=340.0, y=220.0, width=400.0, height=150.0)
+        for row in result:
+            self.tree.insert("", "end", values=row)
 
     #clear everything function
     def clear_screen(self):
