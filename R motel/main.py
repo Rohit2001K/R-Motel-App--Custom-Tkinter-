@@ -93,8 +93,8 @@ class app:
     def LoginUser(self):
         #email=self.email.get()
         #password=self.password.get()
-        email="noemail@why.com"
-        password=1234
+        email="test6"
+        password="test6"
         if not email or not password:
             self.background.itemconfig(self.login_msg, text="Please Enter Your Email and Password First!", fill="red")
         else:
@@ -326,7 +326,7 @@ class app:
 
         #food button
         order_food_img = PhotoImage(file=self.relative_to_assets("order_food_button.png"))
-        order_food_button = Button(image=order_food_img,borderwidth=0,highlightthickness=0,command=lambda: print("order food clicked"),relief="flat")
+        order_food_button = Button(image=order_food_img,borderwidth=0,highlightthickness=0,command=self.meals_order_page,relief="flat")
         order_food_button.place(x=264.0,y=451.0,width=248.23699951171875,height=40.0)
         order_food_img.image=order_food_img
 
@@ -405,11 +405,7 @@ class app:
         left_home_img.image=left_home_img
 
         #back button
-        back_button_img= PhotoImage(file=self.relative_to_assets("back_button.png"))
-        back_button= Button(image=back_button_img,borderwidth=0,highlightthickness=0,command=self.home,relief="flat")
-        back_button.place(x=209.0,y=18.0,width=45.0,height=48.0)
-        back_button_img.image=back_button_img
-
+        self.back_button()
         #heading
         home_img = PhotoImage(file=self.relative_to_assets("my account_head.png"))
         home_heading= canvas.create_image(512.0,118.0,image=home_img)
@@ -521,10 +517,7 @@ class app:
         left_home_img.image=left_home_img
 
         #back button
-        back_button_img= PhotoImage(file=self.relative_to_assets("back_button.png"))
-        back_button= Button(image=back_button_img,borderwidth=0,highlightthickness=0,command=self.home,relief="flat")
-        back_button.place(x=209.0,y=18.0,width=45.0,height=48.0)
-        back_button_img.image=back_button_img
+        self.back_button()
 
         #heading
         home_img = PhotoImage(file=self.relative_to_assets("room_booking_head.png"))
@@ -575,7 +568,7 @@ class app:
         self.tree.column("Room Number", width=100, anchor="center")
         self.tree.column("Beds", width=100, anchor="center")
         self.tree.column("Price", width=100, anchor="center")
-        self.tree.place(x=340.0, y=200.0, width=400.0, height=150.0)
+        self.tree.place(x=340.0, y=180.0, width=400.0, height=200.0)
         for row in result:
             self.tree.insert("", "end", values=row)
 
@@ -651,10 +644,7 @@ class app:
         left_home_img.image=left_home_img
 
         #back button
-        back_button_img= PhotoImage(file=self.relative_to_assets("back_button.png"))
-        back_button= Button(image=back_button_img,borderwidth=0,highlightthickness=0,command=self.home,relief="flat")
-        back_button.place(x=209.0,y=18.0,width=45.0,height=48.0)
-        back_button_img.image=back_button_img
+        self.back_button()
 
         #heading
         home_img = PhotoImage(file=self.relative_to_assets("booking_history_head.png"))
@@ -688,9 +678,125 @@ class app:
         self.tree.column("Room Number", width=100, anchor="center")
         self.tree.column("Check in date", width=100, anchor="center")
         self.tree.column("Check out date", width=100, anchor="center")
-        self.tree.place(x=340.0, y=220.0, width=400.0, height=150.0)
+        self.tree.place(x=340.0, y=220.0, width=400.0, height=250.0)
         for row in result:
             self.tree.insert("", "end", values=row)
+
+    def meals_order_page(self):
+        self.clear_screen() 
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
+        canvas.place(x = 0, y = 0) #basic setup
+
+        #left pannels 
+        left_home_img= PhotoImage(file=self.relative_to_assets("food_l_panel.png"))
+        left_home=canvas.create_image(92.0,305.0,image=left_home_img)
+        left_home_img.image=left_home_img
+
+        #back button
+        self.back_button()
+
+        #heading
+        home_img = PhotoImage(file=self.relative_to_assets("meal_order_head.png"))
+        home_heading= canvas.create_image(541.0,99.0,image=home_img)
+        home_img.image=home_img
+
+        #tree back
+        room_back_img= PhotoImage(file=self.relative_to_assets("food_order_tree_back.png"))
+        room_background= canvas.create_image(551.0,285.0,image=room_back_img)
+        room_back_img.image=room_back_img
+
+        #msg
+        self.meal_order_msg=canvas.create_text(295.0,416.0,anchor="nw",text="Select food item and enter quantity",fill="#004B6A",font=("Bungee Regular", 15 * -1))
+
+        #quantity section
+        quantity_lable=canvas.create_text(295.0,449.0,anchor="nw",text="Quantity :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+
+        #plus button add_button.png
+        add_button_img = PhotoImage(file=self.relative_to_assets("add_button.png"))
+        add_button = Button(image=add_button_img,borderwidth=0,highlightthickness=0,command=lambda: print("+ clicked"),relief="flat")
+        add_button.place(x=433.0,y=459.0,width=48.73284912109375,height=29.0)
+        add_button_img.image=add_button_img
+
+        #entry
+        entry_img = PhotoImage(file=self.relative_to_assets("quantity_entry.png"))
+        entry_back = canvas.create_image(551.5,472.0,image=entry_img)
+        self.quantity = Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0)
+        self.quantity.place(x=495.0,y=459.0, width=113.0,height=26.0)
+        entry_img.image=entry_img 
+
+        #minus button add_button.png
+        minus_button_img = PhotoImage(file=self.relative_to_assets("minus_button.png"))
+        minus_button = Button(image=minus_button_img,borderwidth=0,highlightthickness=0,command=lambda: print("- clicked"),relief="flat")
+        minus_button.place(x=623.0,y=459.0,width=48.73284912109375,height=29.0)
+        minus_button_img.image=minus_button_img
+
+        #submit button 
+        sub_img = PhotoImage(file=self.relative_to_assets("place_order_button.png"))
+        submit_button = Button(image=sub_img,borderwidth=0,highlightthickness=0,command=self.place_food_order,relief="flat")
+        submit_button.place(x=295.0,y=508.0,width=520.0,height=40.0)
+        sub_img.image=sub_img
+
+        #tree view
+        user = User_actions()
+        result=user.food_items_fetch()
+        columns = ("item_id","Name", "Price")
+        style = ttk.Style()
+        style.theme_use("default")
+        style.configure("Treeview",background="white",fieldbackground="white",foreground="black",bordercolor="white",font=("Arial", 12),rowheight=25)
+        style.configure("Treeview.Heading",
+                        background="white",
+                        foreground="black",
+                        font=("Arial", 11))
+        style.map("Treeview",
+                background=[("selected", "#ADD8E6")],
+                foreground=[("selected", "black")])
+        self.tree = ttk.Treeview(canvas, columns=columns, show="headings", style="Treeview")
+
+        self.tree.heading("item_id", text="item_id")
+        self.tree.heading("Name", text="Name")
+        self.tree.heading("Price", text="Price")
+
+        self.tree.column("item_id", width=80, anchor="center")
+        self.tree.column("Name", width=100, anchor="center")
+        self.tree.column("Price", width=100, anchor="center")
+        self.tree.place(x=340.0, y=170.0, width=400.0, height=210.0)
+        for row in result:
+            self.tree.insert("", "end", values=row)
+    
+    #food order main funtion
+    def place_food_order(self):
+        user = User_actions()
+        selected_item = self.tree.selection()
+        if selected_item:
+            selected_item = self.tree.item(selected_item[0])
+            values = selected_item["values"]
+            food_id = values[0] 
+            food_name = values[1] 
+            food_price=values[2]
+            float_price=float(food_price)
+            int_price=int(float_price)
+            quantity = self.quantity.get()
+            if not quantity:
+                self.background.itemconfig(self.meal_order_msg,text="Please enter quantity !", fill="red")
+            else:
+                email=self.user_email
+                total_quantity=int(quantity)
+                total_price=(float_price*total_quantity)
+                place_order = user.food_order(email, food_id, food_name,total_price, quantity)
+                if place_order:
+                    self.meals_order_page()
+                    self.background.itemconfig(self.meal_order_msg,text=f"Order placed successfully.Your total is   Rs.{total_price}", fill="green")
+                else:
+                    self.background.itemconfig(self.meal_order_msg,text="You have no active room bookings.", fill="red")
+        else:
+            self.background.itemconfig(self.meal_order_msg,text="Please select a food item first", fill="red")
+            
+    #back button
+    def back_button(self):
+        back_button_img= PhotoImage(file=self.relative_to_assets("back_button.png"))
+        back_button= Button(image=back_button_img,borderwidth=0,highlightthickness=0,command=self.home,relief="flat")
+        back_button.place(x=209.0,y=18.0,width=45.0,height=48.0)
+        back_button_img.image=back_button_img
 
     #clear everything function
     def clear_screen(self):
