@@ -332,7 +332,7 @@ class app:
 
         #order status button
         order_status_img= PhotoImage(file=self.relative_to_assets("order_status_button.png"))
-        order_status_button = Button(image=order_status_img,borderwidth=0,highlightthickness=0,command=lambda: print("order status clicked"),relief="flat")
+        order_status_button = Button(image=order_status_img,borderwidth=0,highlightthickness=0,command=self.food_order_status,relief="flat")
         order_status_button.place(x=594.0,y=451.0,width=248.23699951171875,height=40.0)
         order_status_img.image=order_status_img
 
@@ -713,20 +713,21 @@ class app:
 
         #plus button add_button.png
         add_button_img = PhotoImage(file=self.relative_to_assets("add_button.png"))
-        add_button = Button(image=add_button_img,borderwidth=0,highlightthickness=0,command=lambda: print("+ clicked"),relief="flat")
+        add_button = Button(image=add_button_img,borderwidth=0,highlightthickness=0,command=self.add_quantity,relief="flat")
         add_button.place(x=433.0,y=459.0,width=48.73284912109375,height=29.0)
         add_button_img.image=add_button_img
 
         #entry
         entry_img = PhotoImage(file=self.relative_to_assets("quantity_entry.png"))
         entry_back = canvas.create_image(551.5,472.0,image=entry_img)
-        self.quantity = Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0)
+        self.quantity = Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,font=(12))
         self.quantity.place(x=495.0,y=459.0, width=113.0,height=26.0)
+        self.quantity.insert(0, "1")
         entry_img.image=entry_img 
 
         #minus button add_button.png
         minus_button_img = PhotoImage(file=self.relative_to_assets("minus_button.png"))
-        minus_button = Button(image=minus_button_img,borderwidth=0,highlightthickness=0,command=lambda: print("- clicked"),relief="flat")
+        minus_button = Button(image=minus_button_img,borderwidth=0,highlightthickness=0,command=self.minus_quantity,relief="flat")
         minus_button.place(x=623.0,y=459.0,width=48.73284912109375,height=29.0)
         minus_button_img.image=minus_button_img
 
@@ -763,6 +764,20 @@ class app:
         for row in result:
             self.tree.insert("", "end", values=row)
     
+    #add button
+    def add_quantity(self):
+        current_qty = int(self.quantity.get())
+        self.quantity.delete(0, 'end')
+        self.quantity.insert(0, str(current_qty + 1))
+
+    def minus_quantity(self):
+        current_qty = int(self.quantity.get())
+        if current_qty > 1:
+            self.quantity.delete(0, 'end')
+            self.quantity.insert(0, str(current_qty - 1))
+        else:
+            self.background.itemconfig(self.meal_order_msg,text="Quantity cannot be less than 1", fill="red")
+
     #food order main funtion
     def place_food_order(self):
         user = User_actions()
@@ -790,7 +805,66 @@ class app:
                     self.background.itemconfig(self.meal_order_msg,text="You have no active room bookings.", fill="red")
         else:
             self.background.itemconfig(self.meal_order_msg,text="Please select a food item first", fill="red")
-            
+
+    def food_order_status(self):
+        self.clear_screen() 
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
+        canvas.place(x = 0, y = 0) #basic setup
+
+        #left pannels 
+        left_home_img= PhotoImage(file=self.relative_to_assets("food_l_panel.png"))
+        left_home=canvas.create_image(92.0,305.0,image=left_home_img)
+        left_home_img.image=left_home_img
+
+        #back button
+        self.back_button()
+
+        #heading
+        home_img = PhotoImage(file=self.relative_to_assets("food_order_status_head.png"))
+        home_heading= canvas.create_image(541.0,99.0,image=home_img)
+        home_img.image=home_img
+
+        #tree back
+        room_back_img= PhotoImage(file=self.relative_to_assets("food_order_status_back.png"))
+        room_background= canvas.create_image(541.0,285.0,image=room_back_img)
+        room_back_img.image=room_back_img
+
+        #tree view
+        user = User_actions()
+        result=user.order_status_check(self.user_email)
+
+        columns = ("order_id","room_no","food_name","quantity", "price","status")
+        style = ttk.Style()
+        style.theme_use("default")
+        style.configure("Treeview",background="white",fieldbackground="white",foreground="black",bordercolor="white",font=("Arial", 12),rowheight=25)
+        style.configure("Treeview.Heading",
+                        background="white",
+                        foreground="black",
+                        font=("Arial", 11))
+        style.map("Treeview",
+                background=[("selected", "#ADD8E6")],
+                foreground=[("selected", "black")])
+        self.tree = ttk.Treeview(canvas, columns=columns, show="headings", style="Treeview")
+
+        self.tree.heading("order_id", text="Order_id")
+        self.tree.heading("room_no", text="Room_no")
+        self.tree.heading("food_name", text="Food_name")
+        self.tree.heading("quantity", text="Quantity")
+        self.tree.heading("price", text="Price")
+        self.tree.heading("status", text="status")
+
+        self.tree.column("order_id", width=60, anchor="center")
+        self.tree.column("room_no", width=80, anchor="center")
+        self.tree.column("food_name", width=100, anchor="center")
+        self.tree.column("quantity", width=60, anchor="center")
+        self.tree.column("price", width=100, anchor="center")
+        self.tree.column("status", width=100, anchor="center")
+        self.tree.place(x=290.0, y=170.0, width=500.0, height=210.0)
+        for row in result:
+            self.tree.insert("", "end", values=row)
+
+
+
     #back button
     def back_button(self):
         back_button_img= PhotoImage(file=self.relative_to_assets("back_button.png"))
