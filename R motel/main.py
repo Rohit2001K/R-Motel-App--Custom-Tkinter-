@@ -4,6 +4,7 @@ from support import User_actions
 from tkinter import *
 import re
 import datetime
+from staff import staff_app
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / "assets"
@@ -91,10 +92,10 @@ class app:
 
     #main login function
     def LoginUser(self):
-        #email=self.email.get()
-        #password=self.password.get()
-        email="test6"
-        password="test6"
+        email=self.email.get()
+        password=self.password.get()
+        #email="test6"
+        #password="test6"
         if not email or not password:
             self.background.itemconfig(self.login_msg, text="Please Enter Your Email and Password First!", fill="red")
         else:
@@ -103,12 +104,20 @@ class app:
             if result==False:
                 self.background.itemconfig(self.login_msg, text="Invalid username or password!", fill="red")
             elif result[0][4]==True: 
-                #self.show_staff_dashboard()
+                self.show_staff_dashboard()
                 pass
             else: 
                 self.user_name = result[0][1]  
                 self.user_email =email  
                 self.home()
+
+#if user is staff member then show staff.py
+    def show_staff_dashboard(self):
+        self.user_email.delete(0, END)
+        self.password.delete(0, END)
+        staff_window = Toplevel(self.root)
+        staff_app = staff_app(staff_window, self.email) 
+        staff_window.mainloop()
                 
 
     #forgot password page       
