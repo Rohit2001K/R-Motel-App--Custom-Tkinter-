@@ -45,7 +45,7 @@ class staff_app:
 
         #PASSWORD RESET REQUEST
         self.pass_req_img= PhotoImage(file=self.relative_to_assets("password_request_button.png"))
-        pass_req_button = Button(image=self.pass_req_img,borderwidth=0,highlightthickness=0,command=lambda: print("PASS REQ"),relief="flat")
+        pass_req_button = Button(image=self.pass_req_img,borderwidth=0,highlightthickness=0,command=self.passwd_reset,relief="flat")
         pass_req_button.place(x=260.0,y=240.0,width=280.0,height=40.0)
 
         #PASSWORD RESET HISTORY
@@ -86,9 +86,161 @@ class staff_app:
         order_history_button = Button(image=self.order_history_img, borderwidth=0, highlightthickness=0, command=lambda: print("order_history_button"), relief="flat")
         order_history_button.place(x=260, y=520, width=280.0, height=40.0)
 
+    #password reset request
+    def passwd_reset(self):
+        self.clear_screen() 
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
+        canvas.place(x = 0, y = 0) #basic setup
+
+        #left pannels 
+        self.left_home_img= PhotoImage(file=self.relative_to_assets("account_l_panel.png"))
+        left_home=canvas.create_image(92.0,305.0,image=self.left_home_img)
+
+        #back button
+        self.back_button(self.home)
+
+        #heading img
+        self.home_img = PhotoImage(file=self.relative_to_assets("password_reset_head.png"))
+        home_heading= canvas.create_image(541.0,99.0,image=self.home_img)
+        
+        #tree back
+        self.passwd_back_img= PhotoImage(file=self.relative_to_assets("food_order_status_back.png"))
+        self.passwd_background= canvas.create_image(541.0,285.0,image=self.passwd_back_img)
+
+        #tree view
+        user=Staff_action(self.user_email)
+        result=user.password_rest()
+        columns = ("Sno.","User Email","Status","Created On")
+        style = ttk.Style()
+        style.theme_use("default")
+        style.configure("Treeview",background="white",fieldbackground="white",foreground="black",bordercolor="white",font=("Arial", 12),rowheight=25)
+        style.configure("Treeview.Heading",
+                        background="white",
+                        foreground="black",
+                        font=("Arial", 11))
+        style.map("Treeview",
+                background=[("selected", "#ADD8E6")],
+                foreground=[("selected", "black")])
+        
+        self.tree = ttk.Treeview(canvas, columns=columns, show="headings", style="Treeview")
+
+        self.tree.heading("Sno.", text="Sno.")
+        self.tree.heading("User Email", text="User Email")
+        self.tree.heading("Status", text="Status")
+        self.tree.heading("Created On", text="Created On")
+
+        self.tree.column("Sno.", width=50, anchor="center")
+        self.tree.column("User Email", width=80, anchor="center")
+        self.tree.column("Status", width=100, anchor="center")
+        self.tree.column("Created On", width=150, anchor="center")
+        self.tree.place(x=290.0, y=170.0, width=500.0, height=210.0)
+        for row in result:
+            self.tree.insert("", "end", values=row)
+        #msg
+        self.passwd_reset_msg=canvas.create_text(280.0,419.0,anchor="nw",text="Select pending request",fill="#004B6A",font=("Bungee Regular", 15 * -1))
+
+        #accept button
+        self.acc_img = PhotoImage(file=self.relative_to_assets("verify_and_accept_passwd.png"))
+        self.acc_button = Button(image=self.acc_img,borderwidth=0,highlightthickness=0,command=self.user_info_fetch,relief="flat")
+        self.acc_button.place(x=280.0,y=466.0,width=535.0,height=40.0)
+
+        #cancel button
+        self.cancel_img = PhotoImage(file=self.relative_to_assets("cancel_req.png"))
+        self.cancel_button = Button(image=self.cancel_img,borderwidth=0,highlightthickness=0,command=self.cancel_passwd_reset,relief="flat")
+        self.cancel_button.place(x=280.0,y=525.0,width=535.0,height=40.0)
+    
+    #cancel password reset request
+    def cancel_passwd_reset(self):
+        user=Staff_action(self.user_email)
+        selected_item=self.tree.selection() 
+        if selected_item:
+            selected_item=self.tree.item(selected_item, "values")
+            user_email = selected_item[1]
+            status="cancelled"
+            user.update_reset_request_status(user_email,self.user_email,status)
+            self.passwd_reset()
+            self.background.itemconfig(self.passwd_reset_msg,text="User reset request cancelled..", fill="green")
+        else:
+            self.background.itemconfig(self.passwd_reset_msg,text="Please select a user request to continue", fill="red")
+
+    #accept and show user info for password reset
+    def user_info_fetch(self):
+        user=Staff_action(self.user_email)
+        selected_item=self.tree.selection() 
+        if selected_item:
+            #removing 
+            self.tree.place_forget()
+            self.background.delete(self.passwd_background)
+            self.acc_button.place_forget()
+            self.cancel_button.place_forget()
+            
+            #back button
+            self.back_button(self.passwd_reset)
+            #msg
+            self.background.itemconfig(self.passwd_reset_msg,text="Please verify the user's information and ensure it matches",fil='green')
+            self.background.coords(self.passwd_reset_msg, 280,374)
+
+            #user info
+            selected_item=self.tree.item(selected_item, "values")
+            user_email = selected_item[1]
+            result=user.user_account_info_fetch(user_email)
+
+            #fname
+            fname=self.background.create_text(280.0,168.0,anchor="nw",text="First Name :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+            user_fname=self.background.create_text(477.0,168.0,anchor="nw",text=f"{result[0][0]}",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+
+            #lname
+            lname=self.background.create_text(280.0,213.0,anchor="nw",text="Last Name :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+            user_lname=self.background.create_text(477.0,213.0,anchor="nw",text=f"{result[0][1]}",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+            
+            #mobile
+            mobile=self.background.create_text(280.0,259.0,anchor="nw",text="Mobile No :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+            user_mobile=self.background.create_text(477.0,259.0,anchor="nw",text=f"{result[0][2]}",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+
+            #email
+            email=self.background.create_text(280.0,304.0,anchor="nw",text="EMail :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+            user_email=self.background.create_text(477.0,304.0,anchor="nw",text=f"{result[0][3]}",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+
+        else:
+            self.background.itemconfig(self.passwd_reset_msg,text="Please select a user request to continue", fill="red")
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    #back button
+    def back_button(self, command=None):
+        self.back_button_img = PhotoImage(file=self.relative_to_assets("back_button.png"))
+        back_button = Button(image=self.back_button_img, borderwidth=0, highlightthickness=0, command=command, relief="flat")
+        back_button.place(x=209.0, y=18.0, width=45.0, height=48.0)
+        
+    #clear everything function
+    def clear_screen(self):
+        for widget in self.window.winfo_children():
+            widget.destroy()
+            
+
+
+staff_window = Tk()  
+Motel_app = staff_app(staff_window,"motel@stuff.come") 
+staff_window.mainloop()
 
 
 

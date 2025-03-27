@@ -193,3 +193,42 @@ class Staff_action:
         cursor.execute('SELECT fname FROM users where email=%s',(self.email,))
         result=cursor.fetchone()
         return result[0]
+
+#USER PASSWORD RESET REQUEST FUNCTIONS       
+    #password_reset tree data fetch
+    def password_rest(self):
+        try:
+            cursor.execute("select sno,email,request_status,request_time from password_reset_requests where request_status='pending'")
+            result=cursor.fetchall()
+            return result
+        except:
+            return False
+        
+    #user data fetch after selecting user from tree      
+    def user_account_info_fetch(self,email):
+        cursor.execute('select fname,lname,mobile,email from users where email=%s',(email,))
+        result=cursor.fetchall()
+        return result
+    #setting user password (updating users table) 
+    def user_password_set(self,email,passwd):
+        try:
+            cursor.execute('update users set password=%s where email=%s',(passwd,email,))
+            my_sql.commit()
+            return True
+        except:
+            my_sql.rollback()
+            return False
+    #Updating status 
+    def update_reset_request_status(self,user_email,staff_email,status):
+        try:
+            cursor.execute('update password_reset_requests set request_status=%s ,staff_member_email=%s where email=%s',(status,staff_email,user_email,))
+            my_sql.commit()
+            return True
+        except:
+            my_sql.rollback()
+            return False
+    #fetching previous password reset requestes
+    def previous_rest_request(self):
+        cursor.execute("select sno,email,staff_member_email,request_status,request_time from password_reset_requests where request_status!='pending'")
+        result=cursor.fetchall()
+        return result
