@@ -182,8 +182,8 @@ class staff_app:
 
             #user info
             selected_item=self.tree.item(selected_item, "values")
-            user_email = selected_item[1]
-            result=user.user_account_info_fetch(user_email)
+            self.reset_user_email = selected_item[1]
+            result=user.user_account_info_fetch(self.reset_user_email)
 
             #fname
             fname=self.background.create_text(280.0,168.0,anchor="nw",text="First Name :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
@@ -201,11 +201,74 @@ class staff_app:
             email=self.background.create_text(280.0,304.0,anchor="nw",text="EMail :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
             user_email=self.background.create_text(477.0,304.0,anchor="nw",text=f"{result[0][3]}",fill="#004B6A",font=("Bungee Regular", 20 * -1))
 
+            #accept button
+            self.acc_img = PhotoImage(file=self.relative_to_assets("verify_and_accept_passwd.png"))
+            self.acc_button = Button(image=self.acc_img,borderwidth=0,highlightthickness=0,command=self.set_passwd_page,relief="flat")
+            self.acc_button.place(x=280.0,y=426.0,width=535.0,height=40.0)
+
         else:
             self.background.itemconfig(self.passwd_reset_msg,text="Please select a user request to continue", fill="red")
 
 
+    #set new password
+    def set_passwd_page(self):
+        self.clear_screen()
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
+        canvas.place(x = 0, y = 0) #basic setup
 
+        #left pannels 
+        self.left_home_img= PhotoImage(file=self.relative_to_assets("account_l_panel.png"))
+        left_home=canvas.create_image(92.0,305.0,image=self.left_home_img)
+
+        #back button
+        self.back_button(self.passwd_reset)
+
+        #heading img
+        self.home_img = PhotoImage(file=self.relative_to_assets("password_reset_head.png"))
+        home_heading= canvas.create_image(541.0,99.0,image=self.home_img)
+
+        #new password
+        new_passwd_lable=canvas.create_text(265.0,234.0,anchor="nw",text="New Password:",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        self.passwd_img=PhotoImage(file=self.relative_to_assets("passwd_entry.png"))
+        passwd_img = canvas.create_image(671.5,256.0,image=self.passwd_img)
+        self.password1=Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,font=(12))
+        self.password1.place(x=523.0,y=242.0,width=297.0,height=26.0)
+
+        #confim password
+        confirm_passwd_lable=canvas.create_text(265.0,280.0,anchor="nw",text="confirm  Password :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        confirm_passwd_img = canvas.create_image(671.5,305.0,image=self.passwd_img)
+        self.password2=Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,font=(12))
+        self.password2.place(x=523.0,y=293,width=297.0,height=26.0)
+
+        #msg
+        self.passwd_set_msg=canvas.create_text(265.0,336.0,anchor="nw",text="Enter a new password",fill="#004B6A",font=("Bungee Regular", 15 * -1))
+
+        #submit button
+        self.set_passwd_img= PhotoImage(file=self.relative_to_assets("set_new_pass.png"))
+        set_new_passwd_button=Button(image=self.set_passwd_img,borderwidth=0,highlightthickness=0,command=self.set_new_passwd,relief="flat")
+        set_new_passwd_button.place(x=265.0, y=400.0,width=564.0,height=40.0)
+
+    #set password logical function
+    def set_new_passwd(self):
+        passwd1=self.password1.get()
+        passwd2=self.password2.get()
+        if not passwd1 or not passwd2:
+            self.background.itemconfig(self.passwd_set_msg, text="Please fill both fields!", fill="red")
+        elif passwd1!=passwd2:
+            self.background.itemconfig(self.passwd_set_msg, text="Passwords must match!", fill="red")
+        else:
+            user=Staff_action(self.user_email)
+            result=user.user_password_set(self.reset_user_email,passwd1)
+            if result:
+                status="completed"
+                user.update_reset_request_status(self.reset_user_email,self.user_email,status)
+                self.passwd_reset()
+                self.background.itemconfig(self.passwd_reset_msg, text=f"Password Updated for {self.reset_user_email}", fill="green")  
+            else:
+                self.background.itemconfig(self.passwd_set_msg, text="Error in settting new password", fill="red")
+
+    
+               
 
 
 
