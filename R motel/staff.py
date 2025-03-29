@@ -50,7 +50,7 @@ class staff_app:
 
         #PASSWORD RESET HISTORY
         self.pass_reset_img= PhotoImage(file=self.relative_to_assets("pass_res_history.png"))
-        pass_reset_button = Button(image=self.pass_reset_img,borderwidth=0,highlightthickness=0,command=lambda: print("PASS RESET"),relief="flat")
+        pass_reset_button = Button(image=self.pass_reset_img,borderwidth=0,highlightthickness=0,command=self.prev_reset_requests,relief="flat")
         pass_reset_button.place(x=574.0,y=240.0,width=280.0,height=40.0)
 
         #USER CHECK OUT
@@ -267,8 +267,58 @@ class staff_app:
             else:
                 self.background.itemconfig(self.passwd_set_msg, text="Error in settting new password", fill="red")
 
-    
-               
+    #previous reset requests
+    def prev_reset_requests(self):
+        self.clear_screen()
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
+        canvas.place(x = 0, y = 0) #basic setup
+
+        #left pannels 
+        self.left_home_img= PhotoImage(file=self.relative_to_assets("account_l_panel.png"))
+        left_home=canvas.create_image(92.0,305.0,image=self.left_home_img)
+
+        #back button
+        self.back_button(self.home)
+
+        #heading img
+        self.home_img = PhotoImage(file=self.relative_to_assets("all_reset_req_head.png"))
+        home_heading= canvas.create_image(541.0,99.0,image=self.home_img)
+
+        #tree back
+        self.passwd_back_img= PhotoImage(file=self.relative_to_assets("food_order_status_back.png"))
+        self.passwd_background= canvas.create_image(541.0,285.0,image=self.passwd_back_img)
+
+        #tree
+        user = Staff_action(self.user_email)
+        result=user.previous_rest_request()
+
+        columns = ("Sno.","User Email","Done By","Status","Created On")
+        style = ttk.Style()
+        style.theme_use("default")
+        style.configure("Treeview",background="white",fieldbackground="white",foreground="black",bordercolor="white",font=("Arial", 12),rowheight=25)
+        style.configure("Treeview.Heading",
+                        background="white",
+                        foreground="black",
+                        font=("Arial", 11))
+        style.map("Treeview",
+                background=[("selected", "#ADD8E6")],
+                foreground=[("selected", "black")])
+        self.tree = ttk.Treeview(canvas, columns=columns, show="headings", style="Treeview")
+
+        self.tree.heading("Sno.", text="Sno.")
+        self.tree.heading("User Email", text="User Email")
+        self.tree.heading("Done By", text="Done By")
+        self.tree.heading("Status", text="Status")
+        self.tree.heading("Created On", text="Created On")
+
+        self.tree.column("Sno.", width=30, anchor="center")
+        self.tree.column("User Email", width=150, anchor="center")
+        self.tree.column("Done By", width=150, anchor="center")
+        self.tree.column("Status", width=80, anchor="center")
+        self.tree.column("Created On", width=140, anchor="center")
+        self.tree.place(x=280.0, y=170.0, width=520.0, height=210.0)
+        for row in result:
+            self.tree.insert("", "end", values=row)    
 
 
 
