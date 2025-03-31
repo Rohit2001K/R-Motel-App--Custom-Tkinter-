@@ -232,3 +232,34 @@ class Staff_action:
         cursor.execute("select sno,email,staff_member_email,request_status,request_time from password_reset_requests where request_status!='pending'")
         result=cursor.fetchall()
         return result
+
+#booking
+    def current_bookings(self):
+        today = date.today()  
+        cursor.execute("""
+            SELECT booking_id, email, room_no, check_in, check_out, days, price,
+                CASE
+                    WHEN check_out <= %s AND check_out_status != 'Completed' THEN 'Overdue'
+                    ELSE check_out_status
+                END AS status
+            FROM bookings
+            WHERE check_out_status != 'Completed'
+        """, (today,))
+        result = cursor.fetchall()
+        return result
+
+    def booking_history(self):
+        cursor.execute('SELECT * FROM bookings where check_out_status="Completed"')
+        result = cursor.fetchall()
+        return result
+
+    def check_out(self,id,room_no):
+        try:
+            cursor.execute('update bookings set check_out_status="Completed" where booking_id=%s',(id,))
+            cursor.execute('update rooms set available=True where room_no=%s',(room_no,))
+            my_sql.commit()
+            return True
+        except Exception as e:
+            my_sql.rollback()  # Rollback the transaction in case of an error
+            print(f"Error occurred: {e}")
+            return False

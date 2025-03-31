@@ -340,18 +340,117 @@ class staff_app:
         self.passwd_back_img= PhotoImage(file=self.relative_to_assets("active_booking_back.png"))
         self.passwd_background= canvas.create_image(541.0,285.0,image=self.passwd_back_img)
 
+        #tree
+        user=Staff_action(self.user_email)
+        result=user.current_bookings()
+        columns = ("Id","Email","RoomNo.", "Check In", "Check Out","Days","Price","Status")
+        style = ttk.Style()
+        style.theme_use("default")
+        style.configure("Treeview",background="white",fieldbackground="white",foreground="black",bordercolor="white",font=("Arial", 12),rowheight=25)
+        style.configure("Treeview.Heading",
+                        background="white",
+                        foreground="black",
+                        font=("Arial", 11))
+        style.map("Treeview",
+                background=[("selected", "#ADD8E6")],
+                foreground=[("selected", "black")])
+        self.tree = ttk.Treeview(canvas, columns=columns, show="headings", style="Treeview")
+
+        self.tree.heading("Id", text="Id")
+        self.tree.heading("Email", text="Email")
+        self.tree.heading("RoomNo.", text="RoomNo.")
+        self.tree.heading("Check In", text="Check In")
+        self.tree.heading("Check Out", text="Check Out")
+        self.tree.heading("Days", text="Days")
+        self.tree.heading("Price", text="Price")
+        self.tree.heading("Status", text="Status")
+
+        self.tree.column("Id", width=40, anchor="center")
+        self.tree.column("Email", width=80, anchor="center")
+        self.tree.column("RoomNo.", width=50, anchor="center")
+        self.tree.column("Check In", width=80, anchor="center")
+        self.tree.column("Check Out", width=80, anchor="center")
+        self.tree.column("Days", width=40, anchor="center")
+        self.tree.column("Price", width=80, anchor="center")
+        self.tree.column("Status", width=80, anchor="center")
+
+        self.tree.tag_configure('overdue', foreground='red',background='yellow')
+        self.tree.place(x=233.0, y=170.0, width=620.0, height=230.0)
+        for row in result:
+            if row[-1] == 'Overdue':
+                self.tree.insert("", "end", values=row, tags=('overdue',))
+            else:
+                self.tree.insert("", "end", values=row)
+
         #msg
         self.check_out_msg=canvas.create_text(231.0,419.0,anchor="nw",text="Select room for check out",fill="#004B6A",font=("Bungee Regular", 15 * -1))
 
         #see user details button
         self.user_detail_img = PhotoImage(file=self.relative_to_assets("see_user_button.png"))
-        self.see_user_button = Button(image=self.user_detail_img,borderwidth=0,highlightthickness=0,command="",relief="flat")
+        self.see_user_button = Button(image=self.user_detail_img,borderwidth=0,highlightthickness=0,command=self.check_out_user_details,relief="flat")
         self.see_user_button.place(x=231.0,y=466.0,width=632.0,height=40.0)
 
         #check out button
         self.confirm_check_img = PhotoImage(file=self.relative_to_assets("confirm_check_out_button.png"))
-        self.check_out_button = Button(image=self.confirm_check_img,borderwidth=0,highlightthickness=0,command="",relief="flat")
+        self.check_out_button = Button(image=self.confirm_check_img,borderwidth=0,highlightthickness=0,command=self.check_out,relief="flat")
         self.check_out_button.place(x=231.0,y=525.0,width=632.0,height=40.0)
+
+    #user check out
+    def check_out(self):
+        selected_room = self.tree.selection() 
+        if selected_room:
+            booking_details=self.tree.item(selected_room, "values")
+            id=booking_details[0]
+            room_no=booking_details[2]
+            user=Staff_action(self.user_email)
+            result=user.check_out(id,room_no)
+            if result==True:
+                self.user_check_out_page()
+                self.background.itemconfig(self.check_out_msg,text='Checkout complete. Thank you!', fill="green")
+            else:
+                self.background.itemconfig(self.check_out_msg,text='Error In Checking Out User...', fill="red")
+        else:
+            self.background.itemconfig(self.check_out_msg,text="Please select a room to continue", fill="red")
+
+    #check out user details
+    def check_out_user_details(self):
+        selected_item = self.tree.selection()
+        selected_item = self.tree.item(selected_item[0])
+        values = selected_item["values"]
+        user_email=values[1]
+        if selected_item:
+            #removing 
+            self.tree.place_forget()
+            self.background.delete(self.passwd_background)
+            self.check_out_button.place_forget()
+            self.see_user_button.place_forget()
+            self.background.delete(self.check_out_msg)
+            
+            self.back_button(self.user_check_out_page)
+
+            #user info fetch
+            user=Staff_action(self.user_email)
+            result=user.user_account_info_fetch(user_email)
+
+            #fname
+            fname=self.background.create_text(280.0,168.0,anchor="nw",text="First Name :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+            user_fname=self.background.create_text(477.0,168.0,anchor="nw",text=f"{result[0][0]}",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+
+            #lname
+            lname=self.background.create_text(280.0,213.0,anchor="nw",text="Last Name :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+            user_lname=self.background.create_text(477.0,213.0,anchor="nw",text=f"{result[0][1]}",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+            
+            #mobile
+            mobile=self.background.create_text(280.0,259.0,anchor="nw",text="Mobile No :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+            user_mobile=self.background.create_text(477.0,259.0,anchor="nw",text=f"{result[0][2]}",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+
+            #email
+            email=self.background.create_text(280.0,304.0,anchor="nw",text="EMail :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+            user_email=self.background.create_text(477.0,304.0,anchor="nw",text=f"{result[0][3]}",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+
+
+        else:
+            self.background.itemconfig(self.check_out_msg,text="Please select a room to continue", fill="red")
 
 
 
