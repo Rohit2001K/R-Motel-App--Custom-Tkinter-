@@ -59,7 +59,7 @@ class staff_app:
 
         #Process check out button
         self.process_check_img= PhotoImage(file=self.relative_to_assets("process_checkout_button.png"))
-        process_checkout_button = Button(image=self.process_check_img,borderwidth=0,highlightthickness=0,command=lambda: print("process_checkout_button"),relief="flat")
+        process_checkout_button = Button(image=self.process_check_img,borderwidth=0,highlightthickness=0,command=self.user_check_out_page,relief="flat")
         process_checkout_button.place(x=260.0,y=348.0,width=280.0,height=40.0)
 
         #booking history
@@ -319,6 +319,39 @@ class staff_app:
         self.tree.place(x=280.0, y=170.0, width=520.0, height=210.0)
         for row in result:
             self.tree.insert("", "end", values=row)    
+
+    def user_check_out_page(self):
+        self.clear_screen()
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
+        canvas.place(x = 0, y = 0) #basic setup
+
+        #left pannels 
+        self.left_home_img= PhotoImage(file=self.relative_to_assets("booking_l_panel.png"))
+        left_home=canvas.create_image(92.0,305.0,image=self.left_home_img)
+
+        #back button
+        self.back_button(self.home)
+
+        #heading img
+        self.home_img = PhotoImage(file=self.relative_to_assets("active_booking_head.png"))
+        home_heading= canvas.create_image(541.0,99.0,image=self.home_img)
+
+        #tree back
+        self.passwd_back_img= PhotoImage(file=self.relative_to_assets("active_booking_back.png"))
+        self.passwd_background= canvas.create_image(541.0,285.0,image=self.passwd_back_img)
+
+        #msg
+        self.check_out_msg=canvas.create_text(231.0,419.0,anchor="nw",text="Select room for check out",fill="#004B6A",font=("Bungee Regular", 15 * -1))
+
+        #see user details button
+        self.user_detail_img = PhotoImage(file=self.relative_to_assets("see_user_button.png"))
+        self.see_user_button = Button(image=self.user_detail_img,borderwidth=0,highlightthickness=0,command="",relief="flat")
+        self.see_user_button.place(x=231.0,y=466.0,width=632.0,height=40.0)
+
+        #check out button
+        self.confirm_check_img = PhotoImage(file=self.relative_to_assets("confirm_check_out_button.png"))
+        self.check_out_button = Button(image=self.confirm_check_img,borderwidth=0,highlightthickness=0,command="",relief="flat")
+        self.check_out_button.place(x=231.0,y=525.0,width=632.0,height=40.0)
 
 
 
