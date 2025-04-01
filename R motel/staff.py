@@ -64,7 +64,7 @@ class staff_app:
 
         #booking history
         self.booking_history_img = PhotoImage(file=self.relative_to_assets("booking_history_button.png"))
-        booking_history_button = Button(image=self.booking_history_img, borderwidth=0, highlightthickness=0, command=lambda: print("booking_history_button"), relief="flat")
+        booking_history_button = Button(image=self.booking_history_img, borderwidth=0, highlightthickness=0, command=self.booking_records, relief="flat")
         booking_history_button.place(x=574.0,y=348.0, width=280.0, height=40.0)
 
         #FOOD SECTION
@@ -133,7 +133,7 @@ class staff_app:
         self.tree.column("User Email", width=80, anchor="center")
         self.tree.column("Status", width=100, anchor="center")
         self.tree.column("Created On", width=150, anchor="center")
-        self.tree.place(x=290.0, y=170.0, width=500.0, height=210.0)
+        self.tree.place(x=285.0, y=170.0, width=512.0, height=230.0)
         for row in result:
             self.tree.insert("", "end", values=row)
         #msg
@@ -285,7 +285,7 @@ class staff_app:
         home_heading= canvas.create_image(541.0,99.0,image=self.home_img)
 
         #tree back
-        self.passwd_back_img= PhotoImage(file=self.relative_to_assets("food_order_status_back.png"))
+        self.passwd_back_img= PhotoImage(file=self.relative_to_assets("active_booking_back.png"))
         self.passwd_background= canvas.create_image(541.0,285.0,image=self.passwd_back_img)
 
         #tree
@@ -316,7 +316,7 @@ class staff_app:
         self.tree.column("Done By", width=150, anchor="center")
         self.tree.column("Status", width=80, anchor="center")
         self.tree.column("Created On", width=140, anchor="center")
-        self.tree.place(x=280.0, y=170.0, width=520.0, height=210.0)
+        self.tree.place(x=230.0, y=170.0, width=625.0, height=230.0)
         for row in result:
             self.tree.insert("", "end", values=row)    
 
@@ -451,6 +451,64 @@ class staff_app:
 
         else:
             self.background.itemconfig(self.check_out_msg,text="Please select a room to continue", fill="red")
+
+    #booking logs
+    def booking_records(self):
+        self.clear_screen()
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
+        canvas.place(x = 0, y = 0) #basic setup
+
+        #left pannels 
+        self.left_home_img= PhotoImage(file=self.relative_to_assets("booking_l_panel.png"))
+        left_home=canvas.create_image(92.0,305.0,image=self.left_home_img)
+
+        #back button
+        self.back_button(self.home)
+
+        #heading img
+        self.home_img = PhotoImage(file=self.relative_to_assets("booking_logs_head.png"))
+        home_heading= canvas.create_image(541.0,99.0,image=self.home_img)
+
+        #tree back
+        self.passwd_back_img= PhotoImage(file=self.relative_to_assets("active_booking_back.png"))
+        self.passwd_background= canvas.create_image(541.0,285.0,image=self.passwd_back_img)
+
+        #tree
+        user=Staff_action(self.user_email)
+        result=user.booking_history()
+        columns = ("Id","Email","RoomNo.", "Check In", "Check Out","Days","Price","Check Out Status")
+        style = ttk.Style()
+        style.theme_use("default")
+        style.configure("Treeview",background="white",fieldbackground="white",foreground="black",bordercolor="white",font=("Arial", 12),rowheight=25)
+        style.configure("Treeview.Heading",
+                        background="white",
+                        foreground="black",
+                        font=("Arial", 11))
+        style.map("Treeview",
+                background=[("selected", "#ADD8E6")],
+                foreground=[("selected", "black")])
+        self.tree = ttk.Treeview(canvas, columns=columns, show="headings", style="Treeview")
+        self.tree.heading("Id", text="Id")
+        self.tree.heading("Email", text="Email")
+        self.tree.heading("RoomNo.", text="RoomNo.")
+        self.tree.heading("Check In", text="Check In")
+        self.tree.heading("Check Out", text="Check Out")
+        self.tree.heading("Days", text="Days")
+        self.tree.heading("Price", text="Price")
+        self.tree.heading("Check Out Status", text="Check Out Status")
+
+        self.tree.column("Id", width=40, anchor="center")
+        self.tree.column("Email", width=80, anchor="center")
+        self.tree.column("RoomNo.", width=50, anchor="center")
+        self.tree.column("Check In", width=80, anchor="center")
+        self.tree.column("Check Out", width=80, anchor="center")
+        self.tree.column("Days", width=40, anchor="center")
+        self.tree.column("Price", width=80, anchor="center")
+        self.tree.column("Check Out Status", width=80, anchor="center")
+        self.tree.place(x=233.0, y=170.0, width=620.0, height=230.0)
+        for row in result:
+            self.tree.insert("", "end", values=row)
+
 
 
 
