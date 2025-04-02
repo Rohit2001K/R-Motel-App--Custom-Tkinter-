@@ -73,7 +73,7 @@ class staff_app:
 
         #food menu
         self.food_menu_img = PhotoImage(file=self.relative_to_assets("food_menu_button.png"))
-        food_menu_button = Button(image=self.food_menu_img, borderwidth=0, highlightthickness=0, command=lambda: print("food_menu_button"), relief="flat")
+        food_menu_button = Button(image=self.food_menu_img, borderwidth=0, highlightthickness=0, command=self.food_menu, relief="flat")
         food_menu_button.place(x=260.0,y=456.0, width=280.0, height=40.0)
 
         #view order
@@ -453,8 +453,42 @@ class staff_app:
             self.background.itemconfig(self.check_out_msg,text="Please select a room to continue", fill="red")
 
 
+    def food_menu(self):
+        self.clear_screen()
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
+        canvas.place(x = 0, y = 0) #basic setup
 
+        #left pannels 
+        self.left_home_img= PhotoImage(file=self.relative_to_assets("food_l_panel.png"))
+        left_home=canvas.create_image(92.0,305.0,image=self.left_home_img)
 
+        #back button
+        self.back_button(self.home)
+
+        #heading img
+        self.home_img = PhotoImage(file=self.relative_to_assets("food_menu_head.png"))
+        home_heading= canvas.create_image(541.0,99.0,image=self.home_img)
+
+        #tree back
+        self.passwd_back_img= PhotoImage(file=self.relative_to_assets("food_menu_back.png"))
+        self.passwd_background= canvas.create_image(541.0,285.0,image=self.passwd_back_img)
+
+        #msg
+        self.food_menu_msg=canvas.create_text(274.0,419.0,anchor="nw",text="change food item availability or add new item",fill="#004B6A",font=("Bungee Regular", 15 * -1))
+
+        #add new item button 
+        self.add_new_img = PhotoImage(file=self.relative_to_assets("add_new_item_button.png"))
+        self.add_new_item_button = Button(image=self.add_new_img,borderwidth=0,highlightthickness=0,command=self.check_out,relief="flat")
+        self.add_new_item_button.place(x=270.0,y=467.0,width=544.0,height=40.0)
+
+        #item status buttons
+        self.make_item_avi_img = PhotoImage(file=self.relative_to_assets("make_item_avi_button.png"))
+        self.make_item_avi_button = Button(image=self.make_item_avi_img,borderwidth=0,highlightthickness=0,command=self.check_out,relief="flat")
+        self.make_item_avi_button.place(x=270.0,y=527.0,width=260.0,height=40.0)
+
+        self.make_item_out_img = PhotoImage(file=self.relative_to_assets("make_item_out_button.png"))
+        self.make_item_out_button = Button(image=self.make_item_out_img,borderwidth=0,highlightthickness=0,command=self.check_out,relief="flat")
+        self.make_item_out_button.place(x=558.0,y=527.0,width=260.0,height=40.0)
 
 
 
