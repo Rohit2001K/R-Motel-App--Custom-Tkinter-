@@ -64,7 +64,7 @@ class staff_app:
 
         #booking history
         self.booking_history_img = PhotoImage(file=self.relative_to_assets("booking_history_button.png"))
-        booking_history_button = Button(image=self.booking_history_img, borderwidth=0, highlightthickness=0, command=lambda: print("booking_history_button"), relief="flat")
+        booking_history_button = Button(image=self.booking_history_img, borderwidth=0, highlightthickness=0, command=self.booking_log, relief="flat")
         booking_history_button.place(x=574.0,y=348.0, width=280.0, height=40.0)
 
         #FOOD SECTION
@@ -452,6 +452,64 @@ class staff_app:
         else:
             self.background.itemconfig(self.check_out_msg,text="Please select a room to continue", fill="red")
 
+    def booking_log(self):
+        self.clear_screen()
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
+        canvas.place(x = 0, y = 0) #basic setup
+
+        #left pannels 
+        self.left_home_img= PhotoImage(file=self.relative_to_assets("booking_l_panel.png"))
+        left_home=canvas.create_image(92.0,305.0,image=self.left_home_img)
+
+        #back button
+        self.back_button(self.home)
+
+        #heading img
+        self.home_img = PhotoImage(file=self.relative_to_assets("booking_history_head.png"))
+        home_heading= canvas.create_image(541.0,99.0,image=self.home_img)
+
+        #tree back
+        self.passwd_back_img= PhotoImage(file=self.relative_to_assets("active_booking_back.png"))
+        self.passwd_background= canvas.create_image(541.0,285.0,image=self.passwd_back_img)
+
+        #tree
+        user=Staff_action(self.user_email)
+        result=user.booking_history()
+        columns = ("Id","Email","RoomNo.", "Check In", "Check Out","Days","Price","Status")
+        style = ttk.Style()
+        style.theme_use("default")
+        style.configure("Treeview",background="white",fieldbackground="white",foreground="black",bordercolor="white",font=("Arial", 12),rowheight=25)
+        style.configure("Treeview.Heading",
+                        background="white",
+                        foreground="black",
+                        font=("Arial", 11))
+        style.map("Treeview",
+                background=[("selected", "#ADD8E6")],
+                foreground=[("selected", "black")])
+        self.tree = ttk.Treeview(canvas, columns=columns, show="headings", style="Treeview")
+
+        self.tree.heading("Id", text="Id")
+        self.tree.heading("Email", text="Email")
+        self.tree.heading("RoomNo.", text="RoomNo.")
+        self.tree.heading("Check In", text="Check In")
+        self.tree.heading("Check Out", text="Check Out")
+        self.tree.heading("Days", text="Days")
+        self.tree.heading("Price", text="Price")
+        self.tree.heading("Status", text="Status")
+
+        self.tree.column("Id", width=40, anchor="center")
+        self.tree.column("Email", width=80, anchor="center")
+        self.tree.column("RoomNo.", width=50, anchor="center")
+        self.tree.column("Check In", width=80, anchor="center")
+        self.tree.column("Check Out", width=80, anchor="center")
+        self.tree.column("Days", width=40, anchor="center")
+        self.tree.column("Price", width=80, anchor="center")
+        self.tree.column("Status", width=80, anchor="center")
+        for row in result:
+            self.tree.insert("", "end", values=row)
+
+        self.tree.tag_configure('overdue', foreground='red',background='yellow')
+        self.tree.place(x=233.0, y=170.0, width=620.0, height=230.0)
 
     def food_menu(self):
         self.clear_screen()
@@ -478,16 +536,16 @@ class staff_app:
 
         #add new item button 
         self.add_new_img = PhotoImage(file=self.relative_to_assets("add_new_item_button.png"))
-        self.add_new_item_button = Button(image=self.add_new_img,borderwidth=0,highlightthickness=0,command=self.check_out,relief="flat")
+        self.add_new_item_button = Button(image=self.add_new_img,borderwidth=0,highlightthickness=0,command="",relief="flat")
         self.add_new_item_button.place(x=270.0,y=467.0,width=544.0,height=40.0)
 
         #item status buttons
         self.make_item_avi_img = PhotoImage(file=self.relative_to_assets("make_item_avi_button.png"))
-        self.make_item_avi_button = Button(image=self.make_item_avi_img,borderwidth=0,highlightthickness=0,command=self.check_out,relief="flat")
+        self.make_item_avi_button = Button(image=self.make_item_avi_img,borderwidth=0,highlightthickness=0,command="",relief="flat")
         self.make_item_avi_button.place(x=270.0,y=527.0,width=260.0,height=40.0)
 
         self.make_item_out_img = PhotoImage(file=self.relative_to_assets("make_item_out_button.png"))
-        self.make_item_out_button = Button(image=self.make_item_out_img,borderwidth=0,highlightthickness=0,command=self.check_out,relief="flat")
+        self.make_item_out_button = Button(image=self.make_item_out_img,borderwidth=0,highlightthickness=0,command="",relief="flat")
         self.make_item_out_button.place(x=558.0,y=527.0,width=260.0,height=40.0)
 
 
