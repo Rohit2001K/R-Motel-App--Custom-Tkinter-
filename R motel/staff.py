@@ -133,7 +133,7 @@ class staff_app:
         self.tree.column("User Email", width=80, anchor="center")
         self.tree.column("Status", width=100, anchor="center")
         self.tree.column("Created On", width=150, anchor="center")
-        self.tree.place(x=290.0, y=170.0, width=500.0, height=210.0)
+        self.tree.place(x=280.0, y=170.0, width=520.0, height=230.0)
         for row in result:
             self.tree.insert("", "end", values=row)
         #msg
@@ -316,7 +316,7 @@ class staff_app:
         self.tree.column("Done By", width=150, anchor="center")
         self.tree.column("Status", width=80, anchor="center")
         self.tree.column("Created On", width=140, anchor="center")
-        self.tree.place(x=280.0, y=170.0, width=520.0, height=210.0)
+        self.tree.place(x=280.0, y=170.0, width=520.0, height=230.0)
         for row in result:
             self.tree.insert("", "end", values=row)    
 
@@ -630,10 +630,23 @@ class staff_app:
 
         #add new item button 
         self.add_new_img = PhotoImage(file=self.relative_to_assets("add_new_item_button.png"))
-        add_new_item_button = Button(image=self.add_new_img,borderwidth=0,highlightthickness=0,command="",relief="flat")
+        add_new_item_button = Button(image=self.add_new_img,borderwidth=0,highlightthickness=0,command=self.add_new_item,relief="flat")
         add_new_item_button.place(x=274.0,y=366.0,width=544.0,height=40.0)
 
     #add new food item logical function
+    def add_new_item(self):
+        user=Staff_action(self.user_email)
+        food_name=self.food_name.get()
+        food_price=self.food_price.get()
+        if not food_name or not food_price:
+            self.background.itemconfig(self.food_menu_msg,text='Please enter the food name and price', fill="red")
+        else:
+            action=user.list_new_item(food_name,food_price)
+            if action==False:
+                self.background.itemconfig(self.food_menu_msg,text='Please recheck the name and price', fill="red")
+            else:
+                self.food_menu()
+                self.background.itemconfig(self.food_menu_msg,text='New item has been listed', fill="green")
 
 
 
@@ -659,7 +672,7 @@ class staff_app:
 
 
 staff_window = Tk()  
-Motel_app = staff_app(staff_window,"motel@stuff.come") 
+Motel_app = staff_app(staff_window,"motel@staff.com") 
 staff_window.mainloop()
 
 

@@ -83,10 +83,10 @@ class app:
 
     #main login function
     def LoginUser(self):
-        #email=self.email.get()
-        #password=self.password.get()
-        email="test6"
-        password="test6"
+        email=self.email.get()
+        password=self.password.get()
+        #email="test6"
+        #password="test6"
         if not email or not password:
             self.background.itemconfig(self.login_msg, text="Please Enter Your Email and Password First!", fill="red")
         else:
