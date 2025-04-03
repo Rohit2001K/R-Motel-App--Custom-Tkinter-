@@ -531,26 +531,109 @@ class staff_app:
         self.passwd_back_img= PhotoImage(file=self.relative_to_assets("food_menu_back.png"))
         self.passwd_background= canvas.create_image(541.0,285.0,image=self.passwd_back_img)
 
+        #tree
+        user=Staff_action(self.user_email)
+        result=user.show_food_items()
+
+        columns = ("Id","Name","Price", "Availability")
+        style = ttk.Style()
+        style.theme_use("default")
+        style.configure("Treeview",background="white",fieldbackground="white",foreground="black",bordercolor="white",font=("Arial", 12),rowheight=25)
+        style.configure("Treeview.Heading",
+                        background="white",
+                        foreground="black",
+                        font=("Arial", 11))
+        style.map("Treeview",
+                background=[("selected", "#ADD8E6")],
+                foreground=[("selected", "black")])
+        self.tree = ttk.Treeview(canvas, columns=columns, show="headings", style="Treeview")
+        self.tree.heading("Id", text="Id")
+        self.tree.heading("Name", text="Name")
+        self.tree.heading("Price", text="Price")
+        self.tree.heading("Availability", text="Availability")
+
+        self.tree.column("Id", width=40, anchor="center")
+        self.tree.column("Name", width=100, anchor="center")
+        self.tree.column("Price", width=50, anchor="center")
+        self.tree.column("Availability", width=100, anchor="center")
+        for row in result:
+            self.tree.insert("", "end", values=row)
+
+        self.tree.tag_configure('overdue', foreground='red',background='yellow')
+        self.tree.place(x=273.0, y=170.0, width=535.0, height=230.0)
+
+
         #msg
         self.food_menu_msg=canvas.create_text(274.0,419.0,anchor="nw",text="change food item availability or add new item",fill="#004B6A",font=("Bungee Regular", 15 * -1))
 
         #add new item button 
         self.add_new_img = PhotoImage(file=self.relative_to_assets("add_new_item_button.png"))
-        self.add_new_item_button = Button(image=self.add_new_img,borderwidth=0,highlightthickness=0,command="",relief="flat")
+        self.add_new_item_button = Button(image=self.add_new_img,borderwidth=0,highlightthickness=0,command=self.add_new_food,relief="flat")
         self.add_new_item_button.place(x=270.0,y=467.0,width=544.0,height=40.0)
 
         #item status buttons
         self.make_item_avi_img = PhotoImage(file=self.relative_to_assets("make_item_avi_button.png"))
-        self.make_item_avi_button = Button(image=self.make_item_avi_img,borderwidth=0,highlightthickness=0,command="",relief="flat")
+        self.make_item_avi_button = Button(image=self.make_item_avi_img,borderwidth=0,highlightthickness=0,command=lambda:self.change_food_avi('available'),relief="flat")
         self.make_item_avi_button.place(x=270.0,y=527.0,width=260.0,height=40.0)
 
         self.make_item_out_img = PhotoImage(file=self.relative_to_assets("make_item_out_button.png"))
-        self.make_item_out_button = Button(image=self.make_item_out_img,borderwidth=0,highlightthickness=0,command="",relief="flat")
+        self.make_item_out_button = Button(image=self.make_item_out_img,borderwidth=0,highlightthickness=0,command=lambda:self.change_food_avi('out of stock'),relief="flat")
         self.make_item_out_button.place(x=558.0,y=527.0,width=260.0,height=40.0)
 
+    #change food item status
+    def change_food_avi(self,status):
+        user=Staff_action(self.user_email)
+        selected_item=self.tree.selection() 
+        if selected_item:
+            selected_item=self.tree.item(selected_item, "values")
+            food_name=selected_item[1]
+            action=user.food_item_status(status,food_name)
+            if not action:
+                self.background.itemconfig(self.food_menu_msg,text="ERROR Please Contact Admin", fill="red")
+            else:
+                self.food_menu()
+                self.background.itemconfig(self.food_menu_msg,text="Food item availability status updated", fill="green")
+        else:
+            self.background.itemconfig(self.food_menu_msg,text="Please select a item", fill="red")
 
+    #add new food item
+    def add_new_food(self):
+        user=Staff_action(self.user_email)
+        #removing 
+        self.tree.place_forget()
+        self.background.delete(self.passwd_background)
+        self.make_item_avi_button.place_forget()
+        self.add_new_item_button.place_forget()
+        self.make_item_out_button.place_forget()
+            
+        #back button
+        self.back_button(self.food_menu)
 
+        #form
+        #food name
+        food_name=self.background.create_text(274.0,220.0,anchor="nw",text="Food name :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        self.name_entry_img=PhotoImage(file=self.relative_to_assets("food_entry_img.png"))
+        name_entry_img_background=self.background.create_image(634.5,242.0,image=self.name_entry_img)
+        self.food_name = Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,font=(10))
+        self.food_name.place(x=460.0,y=228.0,width=349.0,height=26.0)
 
+        #price
+        food_price=self.background.create_text(274.0,266.0,anchor="nw",text="Price :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        self.price_entry_img=PhotoImage(file=self.relative_to_assets("food_entry_img.png"))
+        price_entry_img_background=self.background.create_image(634.5,288.0,image=self.price_entry_img)
+        self.food_price = Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,font=(10))
+        self.food_price.place(x=460.0,y=274.0,width=349.0,height=26.0)
+
+        #msg
+        self.background.itemconfig(self.food_menu_msg,text="Fill above details to list new item",fil='#004B6A')
+        self.background.coords(self.food_menu_msg,274.0,325.0,)
+
+        #add new item button 
+        self.add_new_img = PhotoImage(file=self.relative_to_assets("add_new_item_button.png"))
+        add_new_item_button = Button(image=self.add_new_img,borderwidth=0,highlightthickness=0,command="",relief="flat")
+        add_new_item_button.place(x=274.0,y=366.0,width=544.0,height=40.0)
+
+    #add new food item logical function
 
 
 

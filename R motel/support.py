@@ -263,3 +263,45 @@ class Staff_action:
             my_sql.rollback()  # Rollback the transaction in case of an error
             print(f"Error occurred: {e}")
             return False
+
+#FOOD SECTION
+#showing all food items
+    def show_food_items(self):
+        cursor.execute('select * from food_items')
+        result=cursor.fetchall()
+        return result
+#adding new food iteam into menu 
+    def list_new_item(self,name,price):
+        try:
+            cursor.execute('insert into food_items (name,price) values (%s,%s)',(name,price,))
+            my_sql.commit()
+            return True
+        except:
+            return False
+#updating food iteam availablity status  
+    def food_item_status(self,status,name):
+        try:
+            cursor.execute('UPDATE food_items SET availability = %s WHERE name = %s', (status, name))
+            my_sql.commit()
+            return True
+        except:
+            return False
+#fetching food requsets with pending status
+    def food_req(self):
+        cursor.execute('select order_id,room_no,food_id,food_name,quantity,price,status from orders where status!="delivered" and status!="cancelled"')
+        result=cursor.fetchall()
+        return result
+    
+#fetching delivered and cancelled food requests
+    def previous_food_requests(self):
+        cursor.execute('select order_id,room_no,food_id,food_name,quantity,price,status from orders where status!="pending"')
+        result=cursor.fetchall()
+        return result
+
+    def food_req_status(self,status,id):
+        try:
+            cursor.execute('update orders set status=%s where order_id=%s',(status,id,))
+            my_sql.commit()
+            return True
+        except:
+            return False
