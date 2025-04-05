@@ -294,7 +294,7 @@ class Staff_action:
     
 #fetching delivered and cancelled food requests
     def previous_food_requests(self):
-        cursor.execute('select order_id,room_no,food_id,food_name,quantity,price,status from orders where status!="pending"')
+        cursor.execute('select order_id,room_no,food_id,food_name,quantity,price,status from orders where status!="pending" && status!="preparing"')
         result=cursor.fetchall()
         return result
 

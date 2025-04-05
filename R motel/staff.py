@@ -669,28 +669,74 @@ class staff_app:
         self.passwd_back_img= PhotoImage(file=self.relative_to_assets("food_menu_back.png"))
         self.passwd_background= canvas.create_image(541.0,285.0,image=self.passwd_back_img)
 
-        
+        #tree
+        user=Staff_action(self.user_email)
+        result=user.food_req()
+
+        columns = ("OrderId","room_no","food_id","food_name","quantity","Price","status")
+        style = ttk.Style()
+        style.theme_use("default")
+        style.configure("Treeview",background="white",fieldbackground="white",foreground="black",bordercolor="white",font=("Arial", 12),rowheight=25)
+        style.configure("Treeview.Heading",
+                        background="white",
+                        foreground="black",
+                        font=("Arial", 11))
+        style.map("Treeview",
+                background=[("selected", "#ADD8E6")],
+                foreground=[("selected", "black")])
+        self.tree = ttk.Treeview(canvas, columns=columns, show="headings", style="Treeview")
+
+        self.tree.heading("OrderId", text="OrderId")
+        self.tree.heading("room_no", text="room_no")
+        self.tree.heading("food_id", text="food_id")
+        self.tree.heading("food_name", text="food_name")
+        self.tree.heading("quantity", text="quantity")
+        self.tree.heading("Price", text="Price")
+        self.tree.heading("status", text="status")
+
+        self.tree.column("OrderId", width=50, anchor="center")
+        self.tree.column("room_no", width=50, anchor="center")
+        self.tree.column("food_id", width=50, anchor="center")
+        self.tree.column("food_name", width=100, anchor="center")
+        self.tree.column("quantity", width=50, anchor="center")
+        self.tree.column("Price", width=50, anchor="center")
+        self.tree.column("status", width=100, anchor="center")
+        for row in result:
+            self.tree.insert("", "end", values=row)
+
+        self.tree.place(x=273.0, y=170.0, width=535.0, height=230.0)
+
         #msg
         self.food_order_msg=canvas.create_text(274.0,419.0,anchor="nw",text="change food orders status",fill="#004B6A",font=("Bungee Regular", 15 * -1))
 
         #item status buttons
         self.prepar_img=PhotoImage(file=self.relative_to_assets("preparing_button.png"))
-        preparing_button=Button(image=self.prepar_img,borderwidth=0,highlightthickness=0,command=lambda:self.change_food_avi('available'),relief="flat")
+        preparing_button=Button(image=self.prepar_img,borderwidth=0,highlightthickness=0,command=lambda:self.food_order_status('preparing'),relief="flat")
         preparing_button.place(x=274.0,y=467.0,width=260.0,height=40.0)
 
         self.deliv_img=PhotoImage(file=self.relative_to_assets("delivery_button.png"))
-        deliverd_button=Button(image=self.deliv_img,borderwidth=0,highlightthickness=0,command=lambda:self.change_food_avi('available'),relief="flat")
+        deliverd_button=Button(image=self.deliv_img,borderwidth=0,highlightthickness=0,command=lambda:self.food_order_status('delivered'),relief="flat")
         deliverd_button.place(x=558.0,y=467.0,width=260.0,height=40.0)
 
         self.cancel_img=PhotoImage(file=self.relative_to_assets("cancel_button.png"))
-        cancel_button=Button(image=self.cancel_img,borderwidth=0,highlightthickness=0,command=lambda:self.change_food_avi('available'),relief="flat")
+        cancel_button=Button(image=self.cancel_img,borderwidth=0,highlightthickness=0,command=lambda:self.food_order_status('cancelled'),relief="flat")
         cancel_button.place(x=274.0,y=527.0,width=260.0,height=40.0)
 
-
-
-
-
-
+    #changing food orders status
+    def food_order_status(self,status):
+        selected_item=self.tree.selection() 
+        if selected_item:
+            user=Staff_action(self.user_email)
+            selected_item=self.tree.item(selected_item, "values")
+            food_id=selected_item[0]
+            action=user.food_req_status(status,food_id)
+            if not action:
+                self.background.itemconfig(self.food_order_msg,text='ERROR Please Contact Admin', fill="red")
+            else:
+                self.food_order_pages()
+                self.background.itemconfig(self.food_order_msg,text='Food item status updated', fill="green")
+        else:
+            self.background.itemconfig(self.food_order_msg,text='Please select a food item before changing its status', fill="red")
 
     def food_order_history_page(self):
         self.clear_screen()
@@ -748,14 +794,6 @@ class staff_app:
 
         self.tree.tag_configure('overdue', foreground='red',background='yellow')
         self.tree.place(x=273.0, y=170.0, width=535.0, height=230.0)
-
-
-
-
-
-
-
-
 
     #back button
     def back_button(self, command=None):
