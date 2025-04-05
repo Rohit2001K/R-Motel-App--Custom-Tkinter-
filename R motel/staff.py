@@ -78,7 +78,7 @@ class staff_app:
 
         #view order
         self.view_orders_img = PhotoImage(file=self.relative_to_assets("view_orders_button.png"))
-        view_orders_button = Button(image=self.view_orders_img, borderwidth=0, highlightthickness=0, command=lambda: print("view_orders_button"), relief="flat")
+        view_orders_button = Button(image=self.view_orders_img, borderwidth=0, highlightthickness=0, command=self.food_order_pages, relief="flat")
         view_orders_button.place(x=574, y=456, width=280.0, height=40.0)
 
         #order history
@@ -647,6 +647,50 @@ class staff_app:
             else:
                 self.food_menu()
                 self.background.itemconfig(self.food_menu_msg,text='New item has been listed', fill="green")
+
+    #food orders
+    def food_order_pages(self):
+        self.clear_screen()
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
+        canvas.place(x = 0, y = 0) #basic setup
+
+        #left pannels 
+        self.left_home_img= PhotoImage(file=self.relative_to_assets("food_l_panel.png"))
+        left_home=canvas.create_image(92.0,305.0,image=self.left_home_img)
+
+        #back button
+        self.back_button(self.home)
+
+        #heading img
+        self.home_img = PhotoImage(file=self.relative_to_assets("food_orders.png"))
+        home_heading= canvas.create_image(541.0,99.0,image=self.home_img)
+
+        #tree back
+        self.passwd_back_img= PhotoImage(file=self.relative_to_assets("food_menu_back.png"))
+        self.passwd_background= canvas.create_image(541.0,285.0,image=self.passwd_back_img)
+
+        
+        #msg
+        self.food_order_msg=canvas.create_text(274.0,419.0,anchor="nw",text="change food orders status",fill="#004B6A",font=("Bungee Regular", 15 * -1))
+
+        #item status buttons
+        self.prepar_img=PhotoImage(file=self.relative_to_assets("preparing_button.png"))
+        preparing_button=Button(image=self.prepar_img,borderwidth=0,highlightthickness=0,command=lambda:self.change_food_avi('available'),relief="flat")
+        preparing_button.place(x=274.0,y=467.0,width=260.0,height=40.0)
+
+        self.deliv_img=PhotoImage(file=self.relative_to_assets("delivery_button.png"))
+        deliverd_button=Button(image=self.deliv_img,borderwidth=0,highlightthickness=0,command=lambda:self.change_food_avi('available'),relief="flat")
+        deliverd_button.place(x=558.0,y=467.0,width=260.0,height=40.0)
+
+        self.cancel_img=PhotoImage(file=self.relative_to_assets("cancel_button.png"))
+        cancel_button=Button(image=self.cancel_img,borderwidth=0,highlightthickness=0,command=lambda:self.change_food_avi('available'),relief="flat")
+        cancel_button.place(x=274.0,y=527.0,width=260.0,height=40.0)
+
+
+
+
+
+
 
     def food_order_history_page(self):
         self.clear_screen()
