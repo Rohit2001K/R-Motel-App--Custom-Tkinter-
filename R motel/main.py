@@ -273,6 +273,11 @@ class app:
         self.home_img = PhotoImage(file=self.relative_to_assets("home_page_head.png"))
         home_heading= canvas.create_image(512.0,88.0,image=self.home_img)
 
+        #logout
+        self.logout_button_img = PhotoImage(file=self.relative_to_assets("logout.png"))
+        logout_button = Button(image=self.logout_button_img, borderwidth=0, highlightthickness=0, command=self.user_logout, relief="flat")
+        logout_button.place(x=209.0, y=18.0, width=65.0, height=58.0)
+
         #text
         help_text=canvas.create_text(264.0,164.0,anchor="nw",text="Your comfort is our priority.\nPlease choose an option to get started,",fill="#004B6A",font=("Bungee Regular", 18 * -1))
 
@@ -306,6 +311,11 @@ class app:
         self.order_status_img= PhotoImage(file=self.relative_to_assets("order_status_button.png"))
         order_status_button = Button(image=self.order_status_img,borderwidth=0,highlightthickness=0,command=self.food_order_status,relief="flat")
         order_status_button.place(x=594.0,y=451.0,width=248.23699951171875,height=40.0)
+    
+    #logout
+    def user_logout(self):
+        self.clear_screen()
+        self.login_form()
 
     #account info page
     def account_info(self):

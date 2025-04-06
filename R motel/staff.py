@@ -32,6 +32,11 @@ class staff_app:
         self.left_home_img= PhotoImage(file=self.relative_to_assets("home_left_img.png"))
         left_home=canvas.create_image(92.0,305.0,image=self.left_home_img)
 
+        #logout
+        self.logout_button_img = PhotoImage(file=self.relative_to_assets("logout.png"))
+        logout_button = Button(image=self.logout_button_img, borderwidth=0, highlightthickness=0, command=self.user_logout, relief="flat")
+        logout_button.place(x=209.0, y=18.0, width=65.0, height=58.0)
+
         #heading
         self.home_img = PhotoImage(file=self.relative_to_assets("home_page_head.png"))
         home_heading= canvas.create_image(512.0,88.0,image=self.home_img)
@@ -85,6 +90,12 @@ class staff_app:
         self.order_history_img = PhotoImage(file=self.relative_to_assets("order_history_button.png"))
         order_history_button = Button(image=self.order_history_img, borderwidth=0, highlightthickness=0, command=self.food_order_history_page, relief="flat")
         order_history_button.place(x=260, y=520, width=280.0, height=40.0)
+
+    #logout
+    def user_logout(self):
+        self.clear_screen()
+        self.window.destroy() 
+        
 
     #password reset request
     def passwd_reset(self):
@@ -807,12 +818,13 @@ class staff_app:
             widget.destroy()
             
 
+'''
 
 staff_window = Tk()  
 Motel_app = staff_app(staff_window,"motel@staff.com") 
 staff_window.mainloop()
 
-
+'''
 
 
 
