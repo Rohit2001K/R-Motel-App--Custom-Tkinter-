@@ -14,6 +14,9 @@ class app:
         self.window = Tk()
         self.window.geometry("900x600")
         self.window.title("R Motel")
+        icon_path = self.relative_to_assets("r_motel_logo.png")
+        icon_image = PhotoImage(file=icon_path)
+        self.window.iconphoto(False, icon_image)
         self.login_form()
         self.window.resizable(False, False)
         self.window.mainloop()
@@ -30,7 +33,7 @@ class app:
         #loading login img and placing
         login_img=canvas.place(x = 0, y = 0)
         self.login_page_left_img = PhotoImage(file=self.relative_to_assets("login_form1.png"))
-        Login_img1 = canvas.create_image(180.0,298.0,image=self.login_page_left_img)
+        Login_img1=canvas.create_image(180.0,298.0,image=self.login_page_left_img)
 
         #welcome text
         welcom_text=canvas.create_text(567.0,74.0,anchor="nw",text="Welcome",fill="#004B6A",font=("Bungee Regular", 45 * -1))
@@ -529,7 +532,7 @@ class app:
         self.tree.column("Room Number", width=100, anchor="center")
         self.tree.column("Beds", width=100, anchor="center")
         self.tree.column("Price", width=100, anchor="center")
-        self.tree.place(x=340.0, y=180.0, width=400.0, height=200.0)
+        self.tree.place(x=290.0, y=180.0, width=500.0, height=200.0)
         for row in result:
             self.tree.insert("", "end", values=row)
 
@@ -634,7 +637,7 @@ class app:
         self.tree.column("Room Number", width=100, anchor="center")
         self.tree.column("Check in date", width=100, anchor="center")
         self.tree.column("Check out date", width=100, anchor="center")
-        self.tree.place(x=340.0, y=220.0, width=400.0, height=250.0)
+        self.tree.place(x=300.0, y=200.0, width=500.0, height=280.0)
         for row in result:
             self.tree.insert("", "end", values=row)
 
@@ -709,7 +712,7 @@ class app:
         self.tree.column("item_id", width=80, anchor="center")
         self.tree.column("Name", width=100, anchor="center")
         self.tree.column("Price", width=100, anchor="center")
-        self.tree.place(x=340.0, y=170.0, width=400.0, height=210.0)
+        self.tree.place(x=300.0, y=170.0, width=502.0, height=230.0)
         for row in result:
             self.tree.insert("", "end", values=row)
     
@@ -809,7 +812,7 @@ class app:
         self.tree.column("quantity", width=60, anchor="center")
         self.tree.column("price", width=100, anchor="center")
         self.tree.column("status", width=100, anchor="center")
-        self.tree.place(x=290.0, y=170.0, width=500.0, height=210.0)
+        self.tree.place(x=280.0, y=170.0, width=525.0, height=230.0)
         for row in result:
             self.tree.insert("", "end", values=row)
 

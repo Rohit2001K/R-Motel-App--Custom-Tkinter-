@@ -13,6 +13,9 @@ class staff_app:
     def __init__(self,window,email):
         self.window =window
         self.window.geometry("900x600")
+        icon_path = self.relative_to_assets("r_motel_logo.png")
+        icon_image = PhotoImage(file=icon_path)
+        self.window.iconphoto(False, icon_image)
         self.window.title("R Motel Staff Window")
         self.window.resizable(False, False)
         self.user_email=email
@@ -39,57 +42,69 @@ class staff_app:
 
         #heading
         self.home_img = PhotoImage(file=self.relative_to_assets("home_page_head.png"))
-        home_heading= canvas.create_image(512.0,88.0,image=self.home_img)
-
-        #msg
-        home_msg=canvas.create_text(306.0,138.0,anchor="nw",text=f"Welcome  GT to Staff Dashboard.",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        home_heading= canvas.create_image(551.0,74.0,image=self.home_img)
 
         #sections
         #PASSWORD SECTION
-        pass_msg=canvas.create_text(390.0,195.0,anchor="nw",text="Password Reset Requests",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        pass_msg=canvas.create_text(465.0,127.0,anchor="nw",text="Account / Password",fill="#004B6A",font=("Bungee Regular", 20 * -1))
 
         #PASSWORD RESET REQUEST
         self.pass_req_img= PhotoImage(file=self.relative_to_assets("password_request_button.png"))
         pass_req_button = Button(image=self.pass_req_img,borderwidth=0,highlightthickness=0,command=self.passwd_reset,relief="flat")
-        pass_req_button.place(x=260.0,y=240.0,width=280.0,height=40.0)
+        pass_req_button.place(x=247.0,y=173.0,width=280.0,height=40.0)
 
         #PASSWORD RESET HISTORY
         self.pass_reset_img= PhotoImage(file=self.relative_to_assets("pass_res_history.png"))
         pass_reset_button = Button(image=self.pass_reset_img,borderwidth=0,highlightthickness=0,command=self.prev_reset_requests,relief="flat")
-        pass_reset_button.place(x=574.0,y=240.0,width=280.0,height=40.0)
+        pass_reset_button.place(x=561.0,y=173.0,width=280.0,height=40.0)
+
+        #new staff account
+        self.new_acc_img= PhotoImage(file=self.relative_to_assets("new_staff_acc_button.png"))
+        new_acc_button = Button(image=self.new_acc_img,borderwidth=0,highlightthickness=0,command=self.prev_reset_requests,relief="flat")
+        new_acc_button.place(x=246.0,y=230.0,width=280.0,height=40.0)
 
         #USER CHECK OUT
         #msg
-        user_check_msg=canvas.create_text(467.0,302.0,anchor="nw",text="User Check Out",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        user_check_msg=canvas.create_text(469.0,275.0,anchor="nw",text="User Check Out",fill="#004B6A",font=("Bungee Regular", 20 * -1))
 
         #Process check out button
         self.process_check_img= PhotoImage(file=self.relative_to_assets("process_checkout_button.png"))
         process_checkout_button = Button(image=self.process_check_img,borderwidth=0,highlightthickness=0,command=self.user_check_out_page,relief="flat")
-        process_checkout_button.place(x=260.0,y=348.0,width=280.0,height=40.0)
+        process_checkout_button.place(x=249.0,y=321.0,width=280.0,height=40.0)
 
         #booking history
         self.booking_history_img = PhotoImage(file=self.relative_to_assets("booking_history_button.png"))
         booking_history_button = Button(image=self.booking_history_img, borderwidth=0, highlightthickness=0, command=self.booking_log, relief="flat")
-        booking_history_button.place(x=574.0,y=348.0, width=280.0, height=40.0)
+        booking_history_button.place( x=563.0,y=321.0, width=280.0, height=40.0)
+
+        #room settings
+        self.room_settings_img = PhotoImage(file=self.relative_to_assets("room_settings_button.png"))
+        room_settings_button = Button(image=self.room_settings_img, borderwidth=0, highlightthickness=0, command=self.booking_log, relief="flat")
+        room_settings_button.place(x=247.0,y=380.0,width=280.0, height=40.0)
+
+        #over dues
+        self.over_due_img = PhotoImage(file=self.relative_to_assets("over_due_button.png"))
+        over_due_button = Button(image=self.over_due_img, borderwidth=0, highlightthickness=0, command=self.booking_log, relief="flat")
+        over_due_button.place(x=563.0,y=380.0,width=280.0, height=40.0)
 
         #FOOD SECTION
         #msg
-        food_msg=canvas.create_text(487.0,410.0,anchor="nw",text="Food/Meals",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        food_msg=canvas.create_text(464.0,432.0,anchor="nw",text="Food/Meals",fill="#004B6A",font=("Bungee Regular", 20 * -1))
 
         #food menu
         self.food_menu_img = PhotoImage(file=self.relative_to_assets("food_menu_button.png"))
         food_menu_button = Button(image=self.food_menu_img, borderwidth=0, highlightthickness=0, command=self.food_menu, relief="flat")
-        food_menu_button.place(x=260.0,y=456.0, width=280.0, height=40.0)
+        food_menu_button.place(x=247.0,y=479.0,width=280.0, height=40.0)
 
         #view order
         self.view_orders_img = PhotoImage(file=self.relative_to_assets("view_orders_button.png"))
         view_orders_button = Button(image=self.view_orders_img, borderwidth=0, highlightthickness=0, command=self.food_order_pages, relief="flat")
-        view_orders_button.place(x=574, y=456, width=280.0, height=40.0)
+        view_orders_button.place(x=561.0,y=479.0,width=280.0, height=40.0)
 
         #order history
         self.order_history_img = PhotoImage(file=self.relative_to_assets("order_history_button.png"))
         order_history_button = Button(image=self.order_history_img, borderwidth=0, highlightthickness=0, command=self.food_order_history_page, relief="flat")
-        order_history_button.place(x=260, y=520, width=280.0, height=40.0)
+        order_history_button.place( x=248.0,y=538.0,width=280.0, height=40.0)
 
     #logout
     def user_logout(self):
@@ -818,13 +833,13 @@ class staff_app:
             widget.destroy()
             
 
-'''
+
 
 staff_window = Tk()  
 Motel_app = staff_app(staff_window,"motel@staff.com") 
 staff_window.mainloop()
 
-'''
+
 
 
 
