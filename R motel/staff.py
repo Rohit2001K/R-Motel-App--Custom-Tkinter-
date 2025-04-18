@@ -5,6 +5,7 @@ from tkinter import *
 import re
 import datetime
 from support import Staff_action
+import tkinter.font as tkFont
 
 OUTPUT_PATH = Path(__file__).parent  # Script directory
 ASSETS_PATH = OUTPUT_PATH / "assets" / "staff assets"
@@ -60,7 +61,7 @@ class staff_app:
 
         #new staff account
         self.new_acc_img= PhotoImage(file=self.relative_to_assets("new_staff_acc_button.png"))
-        new_acc_button = Button(image=self.new_acc_img,borderwidth=0,highlightthickness=0,command=self.prev_reset_requests,relief="flat")
+        new_acc_button = Button(image=self.new_acc_img,borderwidth=0,highlightthickness=0,command=self.new_account_page,relief="flat")
         new_acc_button.place(x=246.0,y=230.0,width=280.0,height=40.0)
 
         #USER CHECK OUT
@@ -345,6 +346,107 @@ class staff_app:
         self.tree.place(x=280.0, y=170.0, width=520.0, height=230.0)
         for row in result:
             self.tree.insert("", "end", values=row)    
+
+    def new_account_page(self):
+        self.clear_screen()
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
+        canvas.place(x = 0, y = 0) #basic setup
+
+        #left pannels 
+        self.left_home_img= PhotoImage(file=self.relative_to_assets("account_l_panel.png"))
+        left_home=canvas.create_image(92.0,305.0,image=self.left_home_img)
+
+        #back button
+        self.back_button(self.home)
+
+        #heading
+        self.heading_logo_img= PhotoImage(file=self.relative_to_assets("sign_up_heading.png"))
+        heading_logo = canvas.create_image(550.0,85.0,image=self.heading_logo_img)
+
+        #fields
+        #first name text and entry
+        first_name=canvas.create_text(275.0,144.0,anchor="nw",text="First Name :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        self.fname_img_open = PhotoImage(file=self.relative_to_assets("sign_up_entry.png"))
+        fname_img = canvas.create_image(630.0,169.0,image=self.fname_img_open)
+        self.fname= Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,font=(11))
+        self.fname.place(x=487.0,y=154.0,width=290.0,height=30.0)
+
+        #last name
+        last_name=canvas.create_text(275.0,191.0,anchor="nw",text="Last Name :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        fname_img = canvas.create_image(630.0,217.0,image=self.fname_img_open)
+        self.lname= Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,font=(11))
+        self.lname.place(x=487.0,y=201.0,width=290.0,height=30.0)
+
+        #mobile number
+        first_name=canvas.create_text(275.0,242.0,anchor="nw",text="Mobile No. :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        self.fname_img = canvas.create_image(630.0,268.0,image=self.fname_img_open)
+        self.mobile= Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,font=(11))
+        self.mobile.place(x=487.0,y=252.0,width=290.0,height=30.0)
+
+        #email
+        first_name=canvas.create_text(275.0,293.0,anchor="nw",text="Email :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        fname_img = canvas.create_image(630.0,319.0,image=self.fname_img_open)
+        self.email= Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,font=(11))
+        self.email.place(x=487.0,y=303.0,width=290.0,height=30.0)
+
+        #password
+        first_name=canvas.create_text(275.0,344.0,anchor="nw",text="Password :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        fname_img = canvas.create_image(630.0,370.0,image=self.fname_img_open)
+        self.password1= Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,show="*",font=(11))
+        self.password1.place(x=487.0,y=354.0,width=290.0,height=30.0)
+
+        #confirm password 
+        first_name=canvas.create_text(275.0,395.0,anchor="nw",text="Re Password :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+        fname_img = canvas.create_image(630.0,421.0,image=self.fname_img_open)
+        self.password2= Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,show="*",font=(11))
+        self.password2.place(x=487.0, y=405.0,width=290.0,height=30.0)
+
+        #drop down
+        first_name=canvas.create_text(275.0,446.0,anchor="nw",text="Staff Account  :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
+
+        dropdown_font = tkFont.Font(family="Bungee Regular", size=10)
+
+        self.staff_account_YN = StringVar()
+
+        style = ttk.Style()
+        style.theme_use("clam")
+        style_name = "Custom.TCombobox"
+        style.configure(style_name,
+                        foreground="#004B6A",
+                        background="white",
+                        fieldbackground="white",
+                        selectforeground="#004B6A",
+                        selectbackground="white",
+                        font=dropdown_font,
+                        padding=0)
+        style.map(style_name,
+                fieldbackground=[('readonly', 'white')],
+                background=[('readonly', 'white')],
+                selectbackground=[('readonly', 'white')],
+                selectforeground=[('readonly', '#004B6A')])
+        yes_no_dropdown = ttk.Combobox(self.window,
+                                        textvariable=self.staff_account_YN,
+                                        state="readonly",
+                                        font=dropdown_font,
+                                        style=style_name)
+        yes_no_dropdown['values'] = ("Yes", "No")
+        yes_no_dropdown.place(x=480, y=456, width=300, height=35)
+        yes_no_dropdown.current(1)
+        selected_value = self.staff_account_YN.get()
+        print("Dropdown says:", selected_value)
+
+        #message field
+        self.singup_msg=canvas.create_text(274,498.0,anchor="nw",text="Please Enter  Your Information",fill="#004B6A",font=("Bungee Regular", 12 * -1))
+
+        #submit button
+        self.submit_button_img = PhotoImage(file=self.relative_to_assets("signup_submit.png"))
+        submit_button = Button(image=self.submit_button_img,borderwidth=0,highlightthickness=0,command="",relief="flat")
+        submit_button.place(x=275.0,y=537.0,width=586.0,height=40.0)
+
+       
+
+
+        
 
     def user_check_out_page(self):
         self.clear_screen()
