@@ -190,7 +190,7 @@ class app:
         #first name text and entry
         first_name=canvas.create_text(365.0,174.0,anchor="nw",text="First Name :",fill="#004B6A",font=("Bungee Regular", 20 * -1))
         self.fname_img_open = PhotoImage(file=self.relative_to_assets("sign_up_entry.png"))
-        fname_img = canvas.create_image(692.0,199.0,image=self.fname_img_open)
+        fname_img = canvas.create_image(692.0,199.0,image=self.fname_img_open) 
         self.fname= Entry(bd=0,bg="#D9D9D9",fg="#000716",highlightthickness=0,font=(11))
         self.fname.place(x=547.0,y=184.0,width=290.0,height=30.0)
 

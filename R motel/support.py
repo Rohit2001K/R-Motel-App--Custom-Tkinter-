@@ -232,6 +232,26 @@ class Staff_action:
         cursor.execute("select sno,email,staff_member_email,request_status,request_time from password_reset_requests where request_status!='pending'")
         result=cursor.fetchall()
         return result
+    
+        #checking if requested user exsist or not
+    def check_user_exsist(self,email):
+        cursor.execute("SELECT email FROM users Where email=%s",(email,))
+        result=cursor.fetchall()
+        if result:
+            return True
+        return False
+    #create staff account
+    def create_staff_user(self,fname,lname,mno,email,password,type):
+        try:
+            user_exist=self.check_user_exsist(email)
+            if user_exist:
+                return False
+            else:
+                cursor.execute('INSERT INTO users (fname,lname,mobile,staff_member, email, password) VALUES(%s, %s, %s,%s, %s, %s)', (fname, lname, mno,type, email, password))
+                result=my_sql.commit()
+                return True
+        except:
+            return False 
 
 #booking
     def current_bookings(self):
@@ -246,6 +266,11 @@ class Staff_action:
             WHERE check_out_status != 'Completed'
         """, (today,))
         result = cursor.fetchall()
+        return result
+
+    def room_price_fetch(self,room_no):
+        cursor.execute("SELECT price from rooms where room_no=%s",(room_no,))
+        result=cursor.fetchone()
         return result
 
     def booking_history(self):

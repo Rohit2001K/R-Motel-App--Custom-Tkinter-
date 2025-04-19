@@ -6,6 +6,8 @@ import re
 import datetime
 from support import Staff_action
 import tkinter.font as tkFont
+from datetime import date
+from datetime import datetime
 
 OUTPUT_PATH = Path(__file__).parent  # Script directory
 ASSETS_PATH = OUTPUT_PATH / "assets" / "staff assets"
@@ -82,11 +84,6 @@ class staff_app:
         self.room_settings_img = PhotoImage(file=self.relative_to_assets("room_settings_button.png"))
         room_settings_button = Button(image=self.room_settings_img, borderwidth=0, highlightthickness=0, command=self.booking_log, relief="flat")
         room_settings_button.place(x=247.0,y=380.0,width=280.0, height=40.0)
-
-        #over dues
-        self.over_due_img = PhotoImage(file=self.relative_to_assets("over_due_button.png"))
-        over_due_button = Button(image=self.over_due_img, borderwidth=0, highlightthickness=0, command=self.booking_log, relief="flat")
-        over_due_button.place(x=563.0,y=380.0,width=280.0, height=40.0)
 
         #FOOD SECTION
         #msg
@@ -432,21 +429,45 @@ class staff_app:
         yes_no_dropdown['values'] = ("Yes", "No")
         yes_no_dropdown.place(x=480, y=456, width=300, height=35)
         yes_no_dropdown.current(1)
-        selected_value = self.staff_account_YN.get()
-        print("Dropdown says:", selected_value)
 
         #message field
         self.singup_msg=canvas.create_text(274,498.0,anchor="nw",text="Please Enter  Your Information",fill="#004B6A",font=("Bungee Regular", 12 * -1))
 
         #submit button
         self.submit_button_img = PhotoImage(file=self.relative_to_assets("signup_submit.png"))
-        submit_button = Button(image=self.submit_button_img,borderwidth=0,highlightthickness=0,command="",relief="flat")
+        submit_button = Button(image=self.submit_button_img,borderwidth=0,highlightthickness=0,command=self.submit_staff_creation,relief="flat")
         submit_button.place(x=275.0,y=537.0,width=586.0,height=40.0)
 
-       
-
-
-        
+    #user creation submit
+    def submit_staff_creation(self):
+        email_pattern=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        mobile_pattern=r'^\d{10}$'
+        fname=self.fname.get()
+        lname=self.lname.get()
+        mobile=self.mobile.get()
+        email=self.email.get()
+        pass1=self.password1.get()
+        pass2=self.password2.get()
+        type = 1 if self.staff_account_YN.get() == "Yes" else 0
+        if not fname or not lname or not mobile or not email or not pass1 or not pass2:
+            self.background.itemconfig(self.singup_msg, text="Please fill all fields!", fill="red")
+        elif re.match(email_pattern, email):
+            if re.match(mobile_pattern,mobile):
+                if pass1==pass2:
+                    password=self.password1.get()
+                    user=Staff_action(self.user_email)
+                    result=user.create_staff_user(fname,lname,mobile,email,password,type)
+                    if result:
+                        self.new_account_page()
+                        self.background.itemconfig(self.singup_msg, text="Account created successfully.", fill="Blue")
+                    else:
+                        self.background.itemconfig(self.singup_msg, text="An account with this email address already exists.", fill="red")
+                else:
+                    self.background.itemconfig(self.singup_msg, text="Passwords must match!", fill="red")
+            else:
+                self.background.itemconfig(self.singup_msg, text="Enter valid mobile number!", fill="red")
+        else:
+            self.background.itemconfig(self.singup_msg, text="Enter valid email.", fill="red")
 
     def user_check_out_page(self):
         self.clear_screen()
@@ -530,13 +551,34 @@ class staff_app:
             booking_details=self.tree.item(selected_room, "values")
             id=booking_details[0]
             room_no=booking_details[2]
+            check_out_date=booking_details[4]
+            status=booking_details[7]
             user=Staff_action(self.user_email)
-            result=user.check_out(id,room_no)
-            if result==True:
-                self.user_check_out_page()
-                self.background.itemconfig(self.check_out_msg,text='Checkout complete. Thank you!', fill="green")
+            if status=="Overdue":
+                result=user.room_price_fetch(room_no)
+                price_per_day=result[0]
+                price_without_overdue=int(booking_details[6])
+                today = date.today() 
+                check_out = datetime.strptime(check_out_date, "%Y-%m-%d").date()
+                delta = today - check_out
+                days_difference = delta.days
+                total_over_due_price=price_per_day*days_difference
+                total_price=price_without_overdue+total_over_due_price
+                result=user.check_out(id,room_no)
+                result=True
+                if result==True:
+                    self.user_check_out_page()
+                    self.background.itemconfig(self.check_out_msg,text=f'Total Price Rs {total_price} , Thank you !', fill="green")
+                else:
+                    self.background.itemconfig(self.check_out_msg,text='Error In Checking Out User with over due...', fill="red")
             else:
-                self.background.itemconfig(self.check_out_msg,text='Error In Checking Out User...', fill="red")
+                result=user.check_out(id,room_no)
+                result=True
+                if result==True:
+                    self.user_check_out_page()
+                    self.background.itemconfig(self.check_out_msg,text='Check Out Completed , Thank you !', fill="green")
+                else:
+                    self.background.itemconfig(self.check_out_msg,text='Error In Checking Out User...', fill="red")
         else:
             self.background.itemconfig(self.check_out_msg,text="Please select a room to continue", fill="red")
 
@@ -639,6 +681,7 @@ class staff_app:
         self.tree.tag_configure('overdue', foreground='red',background='yellow')
         self.tree.place(x=233.0, y=170.0, width=620.0, height=230.0)
 
+    
     def food_menu(self):
         self.clear_screen()
         self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
