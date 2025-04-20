@@ -128,7 +128,7 @@ class User_actions:
     #making booked room unavailable and insert booking data into DBMS
     def room_booking_conform(self,email, room_no, check_in_date, check_out_date, days,price):
         try:
-            cursor.execute('UPDATE rooms SET available=False WHERE room_no=%s', (room_no,))
+            cursor.execute('UPDATE rooms SET available=False,booked=True WHERE room_no=%s', (room_no,))
             my_sql.commit()
             cursor.execute('INSERT INTO bookings (email, room_no, check_in, check_out, days,price) VALUES (%s, %s, %s, %s, %s,%s)',(email, room_no, check_in_date, check_out_date, days,price))
             my_sql.commit()
@@ -281,14 +281,32 @@ class Staff_action:
     def check_out(self,id,room_no,price,check_out_date,original_check_out):
         try:
             cursor.execute('update bookings set check_out_status="Completed" ,check_out=%s,scheduled_check_out=%s where booking_id=%s',(check_out_date,original_check_out,id,))
-            cursor.execute('update rooms set available=True where room_no=%s',(room_no,))
+            cursor.execute('UPDATE rooms SET available=True,booked=False WHERE room_no=%s', (room_no,))
             cursor.execute('update bookings set price=%s where room_no=%s',(price,room_no,))
             my_sql.commit()
             return True
         except Exception as e:
-            my_sql.rollback()  # Rollback the transaction in case of an error
+            my_sql.rollback()  
             print(f"Error occurred: {e}")
             return False
+    
+    #room setting
+    def room_setting(self):
+        cursor.execute('select room_no,beds,price,available from Rooms where booked=False')
+        result=cursor.fetchall()
+        return result   
+
+    #changing room availability
+    def room_availability_status(self,room_no,status):
+        try:
+            cursor.execute('update rooms set available=%s where room_no=%s',(status,room_no,))
+            my_sql.commit()
+            return True
+        except:
+            return False
+
+
+
 
 #FOOD SECTION
 #showing all food items

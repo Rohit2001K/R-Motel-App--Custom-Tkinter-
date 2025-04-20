@@ -693,13 +693,76 @@ class staff_app:
         self.back_button(self.home)
 
         #heading img
-        self.home_img = PhotoImage(file=self.relative_to_assets("room_booking_head.png"))
+        self.home_img = PhotoImage(file=self.relative_to_assets("room_settings.png"))
         home_heading= canvas.create_image(541.0,99.0,image=self.home_img)
-
+        
         #tree back
-        self.passwd_back_img= PhotoImage(file=self.relative_to_assets("active_booking_back.png"))
+        self.passwd_back_img= PhotoImage(file=self.relative_to_assets("food_menu_back.png"))
         self.passwd_background= canvas.create_image(541.0,285.0,image=self.passwd_back_img)
 
+        #tree
+        user = Staff_action(self.user_email)
+        result = user.room_setting()
+
+        columns = ("Room Number", "Beds", "Price", "Availability")
+
+        style = ttk.Style()
+        style.theme_use("default")
+        style.configure("Treeview", background="white", fieldbackground="white",
+                        foreground="black", bordercolor="white", font=("Arial", 12), rowheight=25)
+        style.configure("Treeview.Heading", background="white",
+                        foreground="black", font=("Arial", 11))
+        style.map("Treeview",
+                background=[("selected", "#ADD8E6")],
+                foreground=[("selected", "black")])
+
+        self.tree = ttk.Treeview(canvas, columns=columns, show="headings", style="Treeview")
+        self.tree.heading("Room Number", text="Room Number")
+        self.tree.heading("Beds", text="Beds")
+        self.tree.heading("Price", text="Price")
+        self.tree.heading("Availability", text="Availability")
+
+        self.tree.column("Room Number", width=100, anchor="center")
+        self.tree.column("Beds", width=100, anchor="center")
+        self.tree.column("Price", width=100, anchor="center")
+        self.tree.column("Availability", width=100, anchor="center")
+
+        self.tree.place(x=275.0, y=170.0, width=530.0, height=230.0)
+
+        for row in result:
+            room_no, beds, price, availability = row
+            availability_text = "Available" if availability == 1 else "Not Available"
+            self.tree.insert("", "end", values=(room_no, beds, price, availability_text))
+
+        #msg
+        self.room_setting_msg=canvas.create_text(272.0,413.0,anchor="nw",text="change Room availability ",fill="#004B6A",font=("Bungee Regular", 15 * -1))
+
+        #add new item button 
+        self.open_room_img = PhotoImage(file=self.relative_to_assets("open_room_button.png"))
+        open_room_button = Button(image=self.open_room_img,borderwidth=0,highlightthickness=0,command=lambda:self.room_availablity('available'),relief="flat")
+        open_room_button.place(x=270.0,y=467.0,width=538.0,height=40.0)
+ 
+        #item status buttons
+        self.close_room_img = PhotoImage(file=self.relative_to_assets("close_room_button.png"))
+        close_room_button = Button(image=self.close_room_img ,borderwidth=0,highlightthickness=0,command=lambda:self.room_availablity('not available'),relief="flat")
+        close_room_button.place(x=270.0,y=527.0,width=538.0,height=40.0)
+
+    #room available function
+    def room_availablity(self,status):
+        availability = True if status == 'available' else False
+        user=Staff_action(self.user_email)
+        selected_item=self.tree.selection() 
+        if selected_item:
+            selected_item=self.tree.item(selected_item, "values")
+            room_no=selected_item[0]
+            result=user.room_availability_status(room_no,availability)
+            if not result:
+                self.background.itemconfig(self.room_setting_msg,text="ERROR Please Contact Admin", fill="red")
+            else:
+                self.room_setting_page()
+                self.background.itemconfig(self.room_setting_msg,text="Room availability status updated", fill="green")
+        else:
+            self.background.itemconfig(self.room_setting_msg,text="Select Room first", fill="red")
 
     
     def food_menu(self):
