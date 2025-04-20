@@ -82,7 +82,7 @@ class staff_app:
 
         #room settings
         self.room_settings_img = PhotoImage(file=self.relative_to_assets("room_settings_button.png"))
-        room_settings_button = Button(image=self.room_settings_img, borderwidth=0, highlightthickness=0, command=self.booking_log, relief="flat")
+        room_settings_button = Button(image=self.room_settings_img, borderwidth=0, highlightthickness=0, command=self.room_setting_page, relief="flat")
         room_settings_button.place(x=247.0,y=380.0,width=280.0, height=40.0)
 
         #FOOD SECTION
@@ -554,26 +554,24 @@ class staff_app:
             check_out_date=booking_details[4]
             status=booking_details[7]
             user=Staff_action(self.user_email)
+            price_without_overdue=int(booking_details[6])
+            today = date.today() 
             if status=="Overdue":
                 result=user.room_price_fetch(room_no)
                 price_per_day=result[0]
-                price_without_overdue=int(booking_details[6])
-                today = date.today() 
                 check_out = datetime.strptime(check_out_date, "%Y-%m-%d").date()
                 delta = today - check_out
                 days_difference = delta.days
                 total_over_due_price=price_per_day*days_difference
                 total_price=price_without_overdue+total_over_due_price
-                result=user.check_out(id,room_no)
-                result=True
+                result=user.check_out(id,room_no,total_price,today,check_out_date)
                 if result==True:
                     self.user_check_out_page()
                     self.background.itemconfig(self.check_out_msg,text=f'Total Price Rs {total_price} , Thank you !', fill="green")
                 else:
                     self.background.itemconfig(self.check_out_msg,text='Error In Checking Out User with over due...', fill="red")
             else:
-                result=user.check_out(id,room_no)
-                result=True
+                result=user.check_out(id,room_no,price_without_overdue,today,check_out_date)
                 if result==True:
                     self.user_check_out_page()
                     self.background.itemconfig(self.check_out_msg,text='Check Out Completed , Thank you !', fill="green")
@@ -645,7 +643,7 @@ class staff_app:
         #tree
         user=Staff_action(self.user_email)
         result=user.booking_history()
-        columns = ("Id","Email","RoomNo.", "Check In", "Check Out","Days","Price","Status")
+        columns = ("Id","Email","RoomNo.", "Check In", "Check Out","Days","Price","Expected check out")
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview",background="white",fieldbackground="white",foreground="black",bordercolor="white",font=("Arial", 12),rowheight=25)
@@ -665,7 +663,7 @@ class staff_app:
         self.tree.heading("Check Out", text="Check Out")
         self.tree.heading("Days", text="Days")
         self.tree.heading("Price", text="Price")
-        self.tree.heading("Status", text="Status")
+        self.tree.heading("Expected check out", text="Expected check out")
 
         self.tree.column("Id", width=40, anchor="center")
         self.tree.column("Email", width=80, anchor="center")
@@ -674,12 +672,34 @@ class staff_app:
         self.tree.column("Check Out", width=80, anchor="center")
         self.tree.column("Days", width=40, anchor="center")
         self.tree.column("Price", width=80, anchor="center")
-        self.tree.column("Status", width=80, anchor="center")
+        self.tree.column("Expected check out", width=80, anchor="center")
         for row in result:
             self.tree.insert("", "end", values=row)
 
         self.tree.tag_configure('overdue', foreground='red',background='yellow')
         self.tree.place(x=233.0, y=170.0, width=620.0, height=230.0)
+
+    #room setting page
+    def room_setting_page(self):
+        self.clear_screen()
+        self.background=canvas= Canvas(self.window,bg ="white",height = 600,width = 900,bd = 0,highlightthickness = 0,relief = "ridge") #intial white background
+        canvas.place(x = 0, y = 0) #basic setup
+
+        #left pannels 
+        self.left_home_img= PhotoImage(file=self.relative_to_assets("booking_l_panel.png"))
+        left_home=canvas.create_image(92.0,305.0,image=self.left_home_img)
+
+        #back button
+        self.back_button(self.home)
+
+        #heading img
+        self.home_img = PhotoImage(file=self.relative_to_assets("room_booking_head.png"))
+        home_heading= canvas.create_image(541.0,99.0,image=self.home_img)
+
+        #tree back
+        self.passwd_back_img= PhotoImage(file=self.relative_to_assets("active_booking_back.png"))
+        self.passwd_background= canvas.create_image(541.0,285.0,image=self.passwd_back_img)
+
 
     
     def food_menu(self):

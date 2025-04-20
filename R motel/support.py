@@ -274,14 +274,15 @@ class Staff_action:
         return result
 
     def booking_history(self):
-        cursor.execute('SELECT * FROM bookings where check_out_status="Completed"')
+        cursor.execute('SELECT booking_id,email,room_no,check_in,check_out,days,price,scheduled_check_out FROM bookings where check_out_status="Completed"')
         result = cursor.fetchall()
         return result
 
-    def check_out(self,id,room_no):
+    def check_out(self,id,room_no,price,check_out_date,original_check_out):
         try:
-            cursor.execute('update bookings set check_out_status="Completed" where booking_id=%s',(id,))
+            cursor.execute('update bookings set check_out_status="Completed" ,check_out=%s,scheduled_check_out=%s where booking_id=%s',(check_out_date,original_check_out,id,))
             cursor.execute('update rooms set available=True where room_no=%s',(room_no,))
+            cursor.execute('update bookings set price=%s where room_no=%s',(price,room_no,))
             my_sql.commit()
             return True
         except Exception as e:
