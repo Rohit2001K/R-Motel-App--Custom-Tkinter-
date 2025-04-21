@@ -5,6 +5,7 @@ from tkinter import *
 import re
 import datetime
 from staff import staff_app
+import bcrypt
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / "assets"
@@ -93,19 +94,22 @@ class app:
         if not email or not password:
             self.background.itemconfig(self.login_msg, text="Please Enter Your Email and Password First!", fill="red")
         else:
-            self.auth_login = User_actions(email,password)  
-            result = self.auth_login.login_user() 
-            if result==False:
+            self.auth_login = User_actions(email)  
+            stored_passwd=self.auth_login.get_passwd(email)
+            if bcrypt.checkpw(password.encode('utf-8'), stored_passwd.encode('utf-8')):         #comparing passwords
+                result = self.auth_login.login_user(email,stored_passwd) 
+                if result==False:
+                    self.background.itemconfig(self.login_msg, text="Invalid username or password!", fill="red")
+                elif result[0][4]==True: 
+                    self.user_email=email
+                    self.show_staff_dashboard()
+                    pass
+                else: 
+                    self.user_name = result[0][1]  
+                    self.user_email =email  
+                    self.home()
+            else:
                 self.background.itemconfig(self.login_msg, text="Invalid username or password!", fill="red")
-            elif result[0][4]==True: 
-                self.user_email=email
-                self.show_staff_dashboard()
-                pass
-            else: 
-                self.user_name = result[0][1]  
-                self.user_email =email  
-                self.home()
-
     #if user is staff member then show staff.py
     def show_staff_dashboard(self):
         self.window.destroy() 
@@ -248,10 +252,14 @@ class app:
             if re.match(mobile_pattern,mobile):
                 if pass1==pass2:
                     password=self.password1.get()
+                    #hashing the password
+                    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
                     user=User_actions()
-                    result=user.create_user(fname,lname,mobile,email,password)
+                    result=user.create_user(fname,lname,mobile,email,hashed_password)
+                    result=True
                     if result:
-                        self.background.itemconfig(self.singup_msg, text="Account created successfully.", fill="Blue")
+                        self.login_form()
+                        self.background.itemconfig(self.login_msg, text="Account created successfully.", fill="green")
                     else:
                         self.background.itemconfig(self.singup_msg, text="An account with this email address already exists.", fill="red")
                 else:
@@ -462,7 +470,8 @@ class app:
             self.account_updation_without_pass()    
         else:
             if passwd1==passwd2:
-                result=user.user_account_password_update(email,passwd1)
+                hashed_password = bcrypt.hashpw(passwd1.encode('utf-8'), bcrypt.gensalt())
+                result=user.user_account_password_update(email,hashed_password)
                 self.account_updation_without_pass() 
                 if result:
                     self.background.itemconfig(self.my_acc_msg, text="User information updated", fill="green")

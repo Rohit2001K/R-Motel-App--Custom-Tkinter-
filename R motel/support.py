@@ -14,13 +14,23 @@ class User_actions:
         self.password = password
 
     #login user
-    def login_user(self):
-        cursor.execute("SELECT * FROM users WHERE email=%s AND password=%s", (self.user, self.password))
+    def login_user(self,email,password):
+        cursor.execute("SELECT * FROM users WHERE email=%s AND password=%s", (email,password))
         user_auth = cursor.fetchall()
         if user_auth:
             return user_auth
         else:
             return False
+    
+    #password for hashing
+    def get_passwd(self, email):
+        cursor.execute("SELECT password FROM users WHERE email=%s", (email,))
+        user_auth = cursor.fetchone()
+        
+        if user_auth:
+            return user_auth[0] 
+        else:
+            return None
 
 #PASSWORD RESET REQUEST SECTON
      

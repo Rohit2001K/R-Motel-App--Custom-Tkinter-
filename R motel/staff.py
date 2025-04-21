@@ -8,6 +8,7 @@ from support import Staff_action
 import tkinter.font as tkFont
 from datetime import date
 from datetime import datetime
+import bcrypt
 
 OUTPUT_PATH = Path(__file__).parent  # Script directory
 ASSETS_PATH = OUTPUT_PATH / "assets" / "staff assets"
@@ -282,7 +283,9 @@ class staff_app:
             self.background.itemconfig(self.passwd_set_msg, text="Passwords must match!", fill="red")
         else:
             user=Staff_action(self.user_email)
-            result=user.user_password_set(self.reset_user_email,passwd1)
+            #hased password
+            hashed_password = bcrypt.hashpw(passwd1.encode('utf-8'), bcrypt.gensalt())
+            result=user.user_password_set(self.reset_user_email,hashed_password)
             if result:
                 status="completed"
                 user.update_reset_request_status(self.reset_user_email,self.user_email,status)
@@ -454,9 +457,9 @@ class staff_app:
         elif re.match(email_pattern, email):
             if re.match(mobile_pattern,mobile):
                 if pass1==pass2:
-                    password=self.password1.get()
+                    hashed_password = bcrypt.hashpw(pass1.encode('utf-8'), bcrypt.gensalt())
                     user=Staff_action(self.user_email)
-                    result=user.create_staff_user(fname,lname,mobile,email,password,type)
+                    result=user.create_staff_user(fname,lname,mobile,email,hashed_password,type)
                     if result:
                         self.new_account_page()
                         self.background.itemconfig(self.singup_msg, text="Account created successfully.", fill="Blue")
@@ -1061,11 +1064,6 @@ class staff_app:
             widget.destroy()
             
 
-
-
-staff_window = Tk()  
-Motel_app = staff_app(staff_window,"motel@staff.com") 
-staff_window.mainloop()
 
 
 
