@@ -1,0 +1,78 @@
+#crate an DATABSE and here the project tables use in this project
+
+
+CREATE TABLE Rooms (
+    room_no INT PRIMARY KEY,
+    available BOOLEAN DEFAULT TRUE,
+    beds INT NOT NULL, 
+    price int(5) NOT NULL, 
+    booked  BOOLEAN DEFAULT FALSE,
+
+);
+
+CREATE TABLE Users (
+    uid INT PRIMARY KEY AUTO_INCREMENT, 
+    fname VARCHAR(100) NOT NULL,
+    lname VARCHAR(100) NOT NULL, 
+    mobile VARCHAR(15) UNIQUE, 
+    staff_member BOOLEAN DEFAULT FALSE, 
+    email VARCHAR(255) UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+);
+
+CREATE TABLE Bookings (
+    booking_id INT PRIMARY KEY AUTO_INCREMENT, 
+    email varchar(50) NOT NULL,
+    room_no INT,
+    check_in DATE NOT NULL,
+    check_out DATE NOT NULL,
+    days int NOT NULL,
+    price int NOT NULL,
+    check_out_status VARCHAR(20) DEFAULT 'Pending'
+    scheduled_check_out DATE NOT NULL,s
+    FOREIGN KEY (email) REFERENCES Users(email), 
+    FOREIGN KEY (room_no) REFERENCES Rooms(room_no),
+    CONSTRAINT room_availability CHECK (check_in < check_out), 
+    CONSTRAINT unique_booking UNIQUE (room_no, check_in) 
+);
+
+
+CREATE TABLE food_items (
+    item_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    availability varchar(20) DEFAULT 'available');
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    room_no int,
+    food_id INT,
+    food_name varchar(50) NOT NULL,
+    status VARCHAR(50) DEFAULT 'pending',
+    quantity INT,
+    order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(uid),
+    FOREIGN KEY (room_no) REFERENCES Bookings(room_no),
+    FOREIGN KEY (food_id) REFERENCES food_items(item_id)
+);
+
+CREATE TABLE orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,  
+    user_id INT NOT NULL,  
+    room_no INT,                         
+    food_id INT,  
+    food_name VARCHAR(50), 
+    price DECIMAL(10, 2) NOT NULL,              
+    status VARCHAR(50) DEFAULT 'pending',                       
+    quantity INT,                         
+    order_date DATETIME DEFAULT CURRENT_TIMESTAMP,                 
+    FOREIGN KEY (user_id) REFERENCES users(uid)
+);
+
+CREATE TABLE password_reset_requests (
+    sno INT AUTO_INCREMENT PRIMARY KEY,   
+    email VARCHAR(255) NOT NULL,             
+    request_status varchar(50) DEFAULT 'pending',
+    staff_member_email VARCHAR(255),  
+    request_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+);
